@@ -3,1991 +3,626 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>The Russian Campaign — Computer Opponent</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Courier+Prime:wght@400;700&family=Oswald:wght@400;600;700&display=swap');
-
-:root {
-–axis-green: #4a5e2a;
-–axis-light: #7a9040;
-–soviet-red: #8b1a1a;
-–soviet-light: #c0392b;
-–parchment: #e8dfc0;
-–parchment-dark: #d4c89a;
-–ink: #1a1208;
-–mud: #6b5a3a;
-–snow: #e8eef4;
-–clear: #c8d8b0;
-–panel-bg: #1c1a14;
-–panel-border: #3a3020;
-–highlight: #d4a820;
-–danger: #c0392b;
-–safe: #4a7a30;
-}
-
-- { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-background: var(–panel-bg);
-color: var(–parchment);
-font-family: ‘Courier Prime’, monospace;
-min-height: 100vh;
-overflow-x: hidden;
-}
-
-/* HEADER */
-.header {
-background: linear-gradient(135deg, #0a0800 0%, #1c1a14 50%, #0a0800 100%);
-border-bottom: 3px solid var(–highlight);
-padding: 16px 24px;
-display: flex;
-align-items: center;
-justify-content: space-between;
-position: sticky;
-top: 0;
-z-index: 100;
-}
-
-.header-title {
-font-family: ‘Special Elite’, cursive;
-font-size: clamp(18px, 3vw, 28px);
-color: var(–highlight);
-letter-spacing: 2px;
-text-shadow: 0 0 20px rgba(212,168,32,0.3);
-}
-
-.header-sub {
-font-size: 11px;
-color: var(–parchment-dark);
-letter-spacing: 3px;
-text-transform: uppercase;
-margin-top: 2px;
-}
-
-.turn-display {
-text-align: center;
-background: rgba(212,168,32,0.1);
-border: 1px solid var(–highlight);
-padding: 8px 16px;
-border-radius: 2px;
-}
-
-.turn-number {
-font-family: ‘Oswald’, sans-serif;
-font-size: 28px;
-font-weight: 700;
-color: var(–highlight);
-line-height: 1;
-}
-
-.turn-label {
-font-size: 10px;
-letter-spacing: 2px;
-color: var(–parchment-dark);
-text-transform: uppercase;
-}
-
-.weather-badge {
-padding: 8px 16px;
-border-radius: 2px;
-font-family: ‘Oswald’, sans-serif;
-font-size: 14px;
-font-weight: 600;
-letter-spacing: 2px;
-text-transform: uppercase;
-}
-
-.weather-clear { background: var(–clear); color: var(–ink); }
-.weather-ltmud { background: #8b7a50; color: var(–parchment); }
-.weather-mud { background: var(–mud); color: var(–parchment); }
-.weather-snow { background: var(–snow); color: var(–ink); }
-
-/* MAIN LAYOUT */
-.main {
-display: grid;
-grid-template-columns: 1fr 340px;
-grid-template-rows: auto 1fr;
-gap: 0;
-min-height: calc(100vh - 80px);
-}
-
-/* GAME LOG */
-.game-log {
-grid-column: 1;
-grid-row: 1 / 3;
-padding: 20px;
-display: flex;
-flex-direction: column;
-gap: 16px;
-}
-
-.section-title {
-font-family: ‘Oswald’, sans-serif;
-font-size: 13px;
-letter-spacing: 3px;
-text-transform: uppercase;
-color: var(–highlight);
-border-bottom: 1px solid var(–panel-border);
-padding-bottom: 8px;
-margin-bottom: 12px;
-}
-
-/* PHASE INDICATOR */
-.phase-bar {
-display: flex;
-gap: 4px;
-flex-wrap: wrap;
-}
-
-.phase-step {
-flex: 1;
-min-width: 80px;
-padding: 8px 4px;
-text-align: center;
-font-size: 10px;
-letter-spacing: 1px;
-text-transform: uppercase;
-border: 1px solid var(–panel-border);
-border-radius: 2px;
-background: rgba(255,255,255,0.03);
-color: #666;
-transition: all 0.3s;
-cursor: default;
-}
-
-.phase-step.active {
-background: rgba(212,168,32,0.15);
-border-color: var(–highlight);
-color: var(–highlight);
-font-weight: bold;
-}
-
-.phase-step.done {
-background: rgba(74,94,42,0.2);
-border-color: var(–axis-green);
-color: var(–axis-light);
-}
-
-/* ORDERS PANEL */
-.orders-panel {
-background: rgba(139,26,26,0.08);
-border: 1px solid rgba(139,26,26,0.3);
-border-radius: 2px;
-padding: 16px;
-}
-
-.orders-panel.axis {
-background: rgba(74,94,42,0.08);
-border-color: rgba(74,94,42,0.3);
-}
-
-.orders-header {
-display: flex;
-align-items: center;
-gap: 12px;
-margin-bottom: 12px;
-}
-
-.side-badge {
-font-family: ‘Oswald’, sans-serif;
-font-size: 11px;
-font-weight: 600;
-letter-spacing: 2px;
-padding: 4px 10px;
-border-radius: 2px;
-text-transform: uppercase;
-}
-
-.side-badge.axis { background: var(–axis-green); color: var(–parchment); }
-.side-badge.soviet { background: var(–soviet-red); color: var(–parchment); }
-
-.orders-title {
-font-family: ‘Oswald’, sans-serif;
-font-size: 15px;
-color: var(–parchment);
-letter-spacing: 1px;
-}
-
-.order-list {
-list-style: none;
-display: flex;
-flex-direction: column;
-gap: 8px;
-}
-
-.order-item {
-display: flex;
-gap: 10px;
-align-items: flex-start;
-padding: 10px 12px;
-background: rgba(255,255,255,0.03);
-border-left: 3px solid transparent;
-border-radius: 0 2px 2px 0;
-font-size: 13px;
-line-height: 1.5;
-transition: all 0.2s;
-}
-
-.order-item.combat { border-left-color: var(–danger); }
-.order-item.move { border-left-color: var(–highlight); }
-.order-item.rail { border-left-color: #4a90d9; }
-.order-item.info { border-left-color: #666; }
-.order-item.reinforce { border-left-color: var(–safe); }
-
-.order-num {
-font-family: ‘Oswald’, sans-serif;
-font-size: 11px;
-color: #666;
-min-width: 20px;
-padding-top: 2px;
-}
-
-.order-text { flex: 1; }
-.order-hex {
-font-family: ‘Oswald’, sans-serif;
-font-size: 11px;
-color: var(–highlight);
-background: rgba(212,168,32,0.1);
-padding: 1px 6px;
-border-radius: 2px;
-white-space: nowrap;
-}
-
-/* COMBAT RESULT */
-.combat-block {
-background: rgba(0,0,0,0.3);
-border: 1px solid var(–panel-border);
-border-radius: 2px;
-padding: 14px;
-margin-top: 8px;
-}
-
-.combat-odds {
-font-family: ‘Oswald’, sans-serif;
-font-size: 22px;
-font-weight: 700;
-color: var(–highlight);
-}
-
-.combat-roll {
-font-family: ‘Oswald’, sans-serif;
-font-size: 16px;
-color: var(–parchment-dark);
-}
-
-.combat-result {
-font-family: ‘Special Elite’, cursive;
-font-size: 28px;
-font-weight: bold;
-margin: 4px 0;
-}
-
-.result-AE, .result-DE { color: var(–danger); }
-.result-AR, .result-DR { color: var(–highlight); }
-.result-A1, .result-D1 { color: #e07020; }
-.result-EX { color: #c060c0; }
-.result-C { color: #608060; }
-.result-DS { color: var(–danger); }
-.result-AV { color: var(–highlight); font-size: 20px; }
-
-.combat-detail {
-font-size: 12px;
-color: var(–parchment-dark);
-margin-top: 6px;
-line-height: 1.6;
-}
-
-/* LOG HISTORY */
-.log-history {
-background: rgba(0,0,0,0.2);
-border: 1px solid var(–panel-border);
-border-radius: 2px;
-padding: 12px;
-max-height: 200px;
-overflow-y: auto;
-font-size: 12px;
-color: #888;
-line-height: 1.7;
-}
-
-.log-history::-webkit-scrollbar { width: 4px; }
-.log-history::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
-.log-history::-webkit-scrollbar-thumb { background: var(–panel-border); }
-
-.log-entry { padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
-.log-entry:last-child { border-bottom: none; }
-.log-turn { color: var(–highlight); font-weight: bold; }
-
-/* RIGHT SIDEBAR */
-.sidebar {
-grid-column: 2;
-grid-row: 1 / 3;
-background: rgba(0,0,0,0.3);
-border-left: 1px solid var(–panel-border);
-padding: 20px;
-display: flex;
-flex-direction: column;
-gap: 16px;
-overflow-y: auto;
-}
-
-/* REFERENCE TABLES */
-.ref-table {
-width: 100%;
-border-collapse: collapse;
-font-size: 11px;
-}
-
-.ref-table th {
-background: rgba(212,168,32,0.15);
-color: var(–highlight);
-font-family: ‘Oswald’, sans-serif;
-font-size: 10px;
-letter-spacing: 1px;
-text-transform: uppercase;
-padding: 5px 6px;
-text-align: center;
-border: 1px solid var(–panel-border);
-}
-
-.ref-table td {
-padding: 4px 6px;
-text-align: center;
-border: 1px solid rgba(58,48,32,0.5);
-color: var(–parchment-dark);
-}
-
-.ref-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
-.ref-table .result-cell { font-family: ‘Oswald’, sans-serif; font-weight: 600; }
-
-/* INPUT AREA */
-.input-area {
-background: rgba(0,0,0,0.2);
-border: 1px solid var(–panel-border);
-border-radius: 2px;
-padding: 14px;
-}
-
-.input-group {
-display: flex;
-flex-direction: column;
-gap: 8px;
-margin-bottom: 12px;
-}
-
-.input-label {
-font-size: 11px;
-letter-spacing: 2px;
-text-transform: uppercase;
-color: var(–parchment-dark);
-}
-
-.input-field {
-background: rgba(0,0,0,0.3);
-border: 1px solid var(–panel-border);
-border-radius: 2px;
-color: var(–parchment);
-font-family: ‘Courier Prime’, monospace;
-font-size: 13px;
-padding: 8px 10px;
-width: 100%;
-transition: border-color 0.2s;
-}
-
-.input-field:focus {
-outline: none;
-border-color: var(–highlight);
-}
-
-select.input-field option { background: #1c1a14; }
-
-.btn {
-font-family: ‘Oswald’, sans-serif;
-font-size: 13px;
-font-weight: 600;
-letter-spacing: 2px;
-text-transform: uppercase;
-padding: 10px 16px;
-border: none;
-border-radius: 2px;
-cursor: pointer;
-transition: all 0.2s;
-width: 100%;
-}
-
-.btn-primary {
-background: var(–highlight);
-color: var(–ink);
-}
-.btn-primary:hover { background: #e8bc28; transform: translateY(-1px); }
-
-.btn-danger {
-background: var(–soviet-red);
-color: var(–parchment);
-}
-.btn-danger:hover { background: #a02020; }
-
-.btn-secondary {
-background: var(–axis-green);
-color: var(–parchment);
-}
-.btn-secondary:hover { background: var(–axis-light); }
-
-.btn-ghost {
-background: transparent;
-color: var(–parchment-dark);
-border: 1px solid var(–panel-border);
-}
-.btn-ghost:hover { border-color: var(–highlight); color: var(–highlight); }
-
-/* STAT BOXES */
-.stat-grid {
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 8px;
-}
-
-.stat-box {
-background: rgba(0,0,0,0.2);
-border: 1px solid var(–panel-border);
-border-radius: 2px;
-padding: 10px;
-text-align: center;
-}
-
-.stat-value {
-font-family: ‘Oswald’, sans-serif;
-font-size: 22px;
-font-weight: 700;
-color: var(–highlight);
-line-height: 1;
-}
-
-.stat-label {
-font-size: 9px;
-letter-spacing: 2px;
-text-transform: uppercase;
-color: #666;
-margin-top: 4px;
-}
-
-/* SETUP SCREEN */
-.setup-screen {
-position: fixed;
-inset: 0;
-background: linear-gradient(135deg, #0a0800 0%, #1a1610 100%);
-display: flex;
-align-items: center;
-justify-content: center;
-z-index: 1000;
-padding: 20px;
-}
-
-.setup-card {
-background: rgba(28,26,20,0.95);
-border: 2px solid var(–highlight);
-border-radius: 4px;
-padding: 40px;
-max-width: 600px;
-width: 100%;
-box-shadow: 0 0 60px rgba(212,168,32,0.1);
-}
-
-.setup-title {
-font-family: ‘Special Elite’, cursive;
-font-size: 36px;
-color: var(–highlight);
-text-align: center;
-letter-spacing: 3px;
-text-shadow: 0 0 30px rgba(212,168,32,0.4);
-margin-bottom: 4px;
-}
-
-.setup-subtitle {
-font-family: ‘Oswald’, sans-serif;
-font-size: 12px;
-letter-spacing: 4px;
-color: var(–parchment-dark);
-text-align: center;
-text-transform: uppercase;
-margin-bottom: 32px;
-}
-
-.setup-divider {
-border: none;
-border-top: 1px solid var(–panel-border);
-margin: 24px 0;
-}
-
-.setup-option-grid {
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 12px;
-margin-bottom: 20px;
-}
-
-.side-choice {
-border: 2px solid var(–panel-border);
-border-radius: 2px;
-padding: 20px;
-text-align: center;
-cursor: pointer;
-transition: all 0.3s;
-background: rgba(255,255,255,0.02);
-}
-
-.side-choice:hover { border-color: var(–highlight); }
-.side-choice.selected-axis { border-color: var(–axis-green); background: rgba(74,94,42,0.15); }
-.side-choice.selected-soviet { border-color: var(–soviet-red); background: rgba(139,26,26,0.15); }
-
-.side-icon {
-font-size: 32px;
-margin-bottom: 8px;
-}
-
-.side-name {
-font-family: ‘Oswald’, sans-serif;
-font-size: 16px;
-font-weight: 600;
-letter-spacing: 2px;
-text-transform: uppercase;
-}
-
-.side-desc {
-font-size: 11px;
-color: #888;
-margin-top: 4px;
-}
-
-.scenario-select {
-margin-bottom: 20px;
-}
-
-/* NOTIFICATION */
-.notification {
-position: fixed;
-top: 90px;
-right: 20px;
-background: rgba(28,26,20,0.98);
-border: 1px solid var(–highlight);
-border-radius: 2px;
-padding: 14px 20px;
-font-size: 13px;
-max-width: 320px;
-z-index: 200;
-animation: slideIn 0.3s ease;
-box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-}
-
-@keyframes slideIn {
-from { transform: translateX(100%); opacity: 0; }
-to { transform: translateX(0); opacity: 1; }
-}
-
-/* REINFORCEMENT ALERT */
-.reinforce-alert {
-background: rgba(74,94,42,0.15);
-border: 1px solid var(–axis-green);
-border-radius: 2px;
-padding: 12px;
-font-size: 12px;
-line-height: 1.6;
-}
-
-.reinforce-alert.soviet {
-background: rgba(139,26,26,0.15);
-border-color: var(–soviet-red);
-}
-
-/* VICTORY CHECK */
-.victory-banner {
-background: linear-gradient(135deg, rgba(212,168,32,0.2), rgba(212,168,32,0.05));
-border: 2px solid var(–highlight);
-border-radius: 2px;
-padding: 20px;
-text-align: center;
-}
-
-.victory-text {
-font-family: ‘Special Elite’, cursive;
-font-size: 24px;
-color: var(–highlight);
-margin-bottom: 8px;
-}
-
-/* TOOLTIP */
-.tooltip-wrap { position: relative; display: inline-block; }
-.tooltip {
-position: absolute;
-bottom: 100%;
-left: 50%;
-transform: translateX(-50%);
-background: rgba(0,0,0,0.95);
-border: 1px solid var(–panel-border);
-padding: 6px 10px;
-font-size: 11px;
-white-space: nowrap;
-border-radius: 2px;
-pointer-events: none;
-display: none;
-z-index: 50;
-}
-.tooltip-wrap:hover .tooltip { display: block; }
-
-/* SCROLLBARS */
-.sidebar::-webkit-scrollbar { width: 4px; }
-.sidebar::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
-.sidebar::-webkit-scrollbar-thumb { background: var(–panel-border); }
-
-/* RESPONSIVE */
-@media (max-width: 768px) {
-.main { grid-template-columns: 1fr; grid-template-rows: auto auto auto; }
-.game-log { grid-column: 1; grid-row: 1; }
-.sidebar { grid-column: 1; grid-row: 2; border-left: none; border-top: 1px solid var(–panel-border); }
-.setup-option-grid { grid-template-columns: 1fr; }
-.setup-card { padding: 24px; }
-}
-
-.hidden { display: none !important; }
-
-.pulse {
-animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-0%, 100% { opacity: 1; }
-50% { opacity: 0.6; }
-}
+  @import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Oswald:wght@400;600;700&family=Source+Serif+4:wght@400;600&display=swap');
+  :root {
+    --axis-green:#2d5a1b;--axis-light:#4a8a28;--axis-bg:#e8f0e0;
+    --soviet-red:#8b1a1a;--soviet-light:#c0392b;--soviet-bg:#f5e8e8;
+    --parchment:#f5f0e0;--parchment-dark:#e8e0c8;
+    --ink:#1a1208;--panel-bg:#f0ebe0;--border:#c8b890;
+    --highlight:#8b6914;--highlight-bg:#fff8e8;
+    --danger:#8b1a1a;--safe:#1a5c1a;
+    --body-bg:#ddd5bb;--header-bg:#2a2010;--header-text:#f5e8c0;
+    --section-title:#3a2808;--text-main:#1a1208;--text-secondary:#5a4a2a;
+    --sidebar-bg:#ede8d8;--input-bg:#ffffff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--body-bg);color:var(--text-main);font-family:'Source Serif 4',Georgia,serif;font-size:15px;min-height:100vh;line-height:1.5}
+  /* HEADER */
+  .hdr{background:var(--header-bg);border-bottom:4px solid #8b6914;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:0;z-index:100;flex-wrap:wrap}
+  .hdr-title{font-family:'Special Elite',cursive;font-size:clamp(18px,3.5vw,28px);color:#f5e8c0}
+  .hdr-sub{font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:2px;color:#c8b080;text-transform:uppercase;margin-top:2px}
+  .turn-box{text-align:center;background:rgba(245,232,192,.12);border:2px solid #8b6914;padding:8px 16px;border-radius:4px}
+  .turn-num{font-family:'Oswald',sans-serif;font-size:30px;font-weight:700;color:#f5e8c0;line-height:1}
+  .turn-lbl{font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:2px;color:#c8b080;text-transform:uppercase}
+  .wx-badge{padding:9px 16px;border-radius:4px;font-family:'Oswald',sans-serif;font-size:15px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-align:center;min-width:90px}
+  .wx-Clear{background:#c8e8a0;color:#1a3a08;border:2px solid #5a8a20}
+  .wx-LtMud{background:#d8c890;color:#3a2a08;border:2px solid #8a7030}
+  .wx-Mud{background:#a89060;color:#fff;border:2px solid #604820}
+  .wx-Snow{background:#e0ecf8;color:#1a2a4a;border:2px solid #6080a0}
+  .hdr-drm{text-align:center}
+  .hdr-drm-lbl{font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:2px;color:#c8b080;text-transform:uppercase}
+  .hdr-drm-val{font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;color:#f5e8c0}
+  .btn-save{background:#8b6914;color:#f5e8c0;border:none;padding:9px 16px;font-family:'Oswald',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:4px;cursor:pointer}
+  .btn-save:hover{background:#a07818}
+  /* LAYOUT */
+  .main{display:grid;grid-template-columns:1fr 310px;min-height:calc(100vh - 82px)}
+  /* LEFT */
+  .left{padding:18px;display:flex;flex-direction:column;gap:16px;background:var(--panel-bg)}
+  .sec-title{font-family:'Oswald',sans-serif;font-size:13px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--section-title);border-bottom:2px solid var(--border);padding-bottom:6px;margin-bottom:10px}
+  /* PHASE BAR */
+  .phase-bar{display:flex;gap:4px;flex-wrap:wrap}
+  .ph{flex:1;min-width:65px;padding:8px 3px;text-align:center;font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;border:2px solid var(--border);border-radius:4px;background:#fff;color:#a09070;transition:all .2s}
+  .ph.active{background:#2a2010;border-color:#8b6914;color:#f5e8c0;font-weight:700}
+  .ph.done{background:var(--axis-bg);border-color:var(--axis-green);color:var(--axis-green);font-weight:600}
+  /* ORDERS */
+  .orders-panel{background:#fff;border:2px solid var(--border);border-radius:6px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+  .orders-panel.ap{border-left:6px solid var(--axis-green)}
+  .orders-panel.sp{border-left:6px solid var(--soviet-red)}
+  .orders-hdr{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .side-badge{font-family:'Oswald',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;padding:4px 12px;border-radius:3px;text-transform:uppercase}
+  .sb-axis{background:var(--axis-green);color:#fff}
+  .sb-soviet{background:var(--soviet-red);color:#fff}
+  .sb-neutral{background:#5a4a2a;color:#fff}
+  .orders-title{font-family:'Oswald',sans-serif;font-size:16px;font-weight:600;color:var(--text-main)}
+  .order-list{list-style:none;display:flex;flex-direction:column;gap:7px}
+  .order-item{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;border-left:4px solid transparent;border-radius:0 4px 4px 0;font-size:14px;line-height:1.6;background:#fafaf5}
+  .order-item.combat{border-left-color:var(--soviet-red);background:#fff5f5}
+  .order-item.move{border-left-color:var(--axis-green);background:#f5faf0}
+  .order-item.rail{border-left-color:#1a4a8b;background:#f0f5ff}
+  .order-item.info{border-left-color:#8b6914;background:#fffbf0}
+  .order-item.reinforce{border-left-color:var(--safe);background:#f0f8f0}
+  .order-num{font-family:'Oswald',sans-serif;font-size:12px;font-weight:700;color:#a09070;min-width:20px;padding-top:2px}
+  .order-text{flex:1;color:var(--text-main)}
+  .order-hex{font-family:'Oswald',sans-serif;font-size:11px;font-weight:700;color:var(--highlight);background:var(--highlight-bg);border:1px solid #d4a820;padding:1px 8px;border-radius:3px;white-space:nowrap;margin-left:4px}
+  /* COMBAT BLOCK */
+  .combat-block{background:#fff;border:2px solid var(--border);border-radius:6px;padding:16px;margin-top:10px}
+  .combat-sides{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+  .combat-cf{font-family:'Oswald',sans-serif;font-size:26px;font-weight:700;color:var(--text-main)}
+  .combat-cf-lbl{font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-secondary)}
+  .combat-result-area{text-align:center;border-top:2px solid var(--border);padding-top:12px}
+  .combat-odds-txt{font-family:'Oswald',sans-serif;font-size:14px;color:var(--text-secondary);margin-bottom:4px}
+  .combat-die-txt{font-family:'Oswald',sans-serif;font-size:18px;font-weight:600;color:var(--text-main);margin-bottom:6px}
+  .combat-result-big{font-family:'Special Elite',cursive;font-size:44px;font-weight:bold;line-height:1;margin:4px 0 8px}
+  .cr-AE,.cr-A1{color:#8b1a1a}.cr-AR{color:#8b6914}.cr-C{color:#2a5a2a}
+  .cr-EX{color:#6a1a8b}.cr-DR,.cr-D1{color:#1a3a8b}.cr-DE,.cr-DS{color:#8b1a1a}
+  .combat-explain{font-size:13px;color:var(--text-secondary);line-height:1.6;background:#fafaf5;border-radius:4px;padding:8px 12px;margin-top:6px}
+  /* INPUT */
+  .input-area{background:#fff;border:2px solid var(--border);border-radius:6px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+  .player-prompt{font-size:14px;color:var(--text-secondary);line-height:1.7;margin-bottom:14px;padding:10px 14px;background:var(--highlight-bg);border-left:4px solid var(--highlight);border-radius:0 4px 4px 0}
+  .inp-grp{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+  .inp-lbl{font-family:'Oswald',sans-serif;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary)}
+  .inp{background:var(--input-bg);border:2px solid var(--border);border-radius:4px;color:var(--text-main);font-family:'Source Serif 4',serif;font-size:15px;padding:9px 12px;width:100%;transition:border-color .2s}
+  .inp:focus{outline:none;border-color:var(--highlight);box-shadow:0 0 0 3px rgba(139,105,20,.15)}
+  select.inp option{background:#fff;color:var(--text-main)}
+  .btn{font-family:'Oswald',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:12px 16px;border:none;border-radius:4px;cursor:pointer;transition:all .15s;width:100%;margin-bottom:8px}
+  .btn-primary{background:#2a2010;color:#f5e8c0;border:2px solid #8b6914}
+  .btn-primary:hover{background:#3a3018}
+  .btn-combat{background:var(--soviet-red);color:#fff;border:2px solid #6a1010}
+  .btn-combat:hover{background:#a02020}
+  .btn-weather{background:#1a3a6a;color:#fff;border:2px solid #0a2050}
+  .btn-weather:hover{background:#1a4a8a}
+  .btn-ghost{background:#fff;color:var(--text-main);border:2px solid var(--border)}
+  .btn-ghost:hover{border-color:var(--highlight);color:var(--highlight)}
+  /* LOG */
+  .log-box{background:#fff;border:2px solid var(--border);border-radius:6px;padding:12px;max-height:180px;overflow-y:auto;font-size:13px;color:var(--text-secondary);line-height:1.8}
+  .log-box::-webkit-scrollbar{width:5px}
+  .log-box::-webkit-scrollbar-track{background:var(--parchment-dark)}
+  .log-box::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  .log-e{padding:2px 0;border-bottom:1px solid #f0e8d0}
+  .log-e.log-turn{color:var(--highlight);font-weight:700;font-family:'Oswald',sans-serif}
+  /* SIDEBAR */
+  .sidebar{background:var(--sidebar-bg);border-left:2px solid var(--border);padding:16px;display:flex;flex-direction:column;gap:16px;overflow-y:auto}
+  .sidebar::-webkit-scrollbar{width:5px}
+  .sidebar::-webkit-scrollbar-track{background:var(--parchment-dark)}
+  .sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  /* STATS */
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .stat-box{background:#fff;border:2px solid var(--border);border-radius:6px;padding:10px;text-align:center}
+  .stat-val{font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;color:var(--text-main);line-height:1}
+  .stat-lbl{font-family:'Oswald',sans-serif;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary);margin-top:3px}
+  /* REF TABLE */
+  .ref-tbl{width:100%;border-collapse:collapse;font-size:12px;background:#fff;border:2px solid var(--border);border-radius:6px;overflow:hidden}
+  .ref-tbl th{background:#2a2010;color:#f5e8c0;font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1px;padding:6px 3px;text-align:center;border:1px solid #4a3a20}
+  .ref-tbl td{padding:5px 3px;text-align:center;border:1px solid #e0d8c0;font-family:'Oswald',sans-serif;font-weight:600;font-size:12px}
+  .ref-tbl tr:nth-child(even) td{background:#f8f4ea}
+  .cAE,.cA1{color:#8b1a1a}.cAR{color:#8b6914}.cC{color:#2a5a2a}
+  .cEX{color:#6a1a8b}.cDR,.cD1{color:#1a3a8b}.cDE,.cDS{color:#8b1a1a}
+  /* REINFORCE */
+  .reinf-alert{background:var(--axis-bg);border:2px solid var(--axis-green);border-radius:6px;padding:12px;font-size:13px;line-height:1.7;margin-bottom:8px}
+  .reinf-alert.sov{background:var(--soviet-bg);border-color:var(--soviet-red)}
+  /* VICTORY */
+  .vic-banner{background:var(--highlight-bg);border:3px solid var(--highlight);border-radius:6px;padding:20px;text-align:center}
+  .vic-title{font-family:'Special Elite',cursive;font-size:24px;color:var(--highlight);margin-bottom:10px}
+  .info-box{background:var(--highlight-bg);border:1px solid #d4a820;border-radius:4px;padding:10px 14px;font-size:13px;color:var(--text-secondary);line-height:1.7}
+  /* SETUP */
+  .setup-screen{position:fixed;inset:0;background:#2a2010;display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px;overflow-y:auto}
+  .setup-card{background:var(--parchment);border:3px solid #8b6914;border-radius:8px;padding:32px;max-width:560px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+  .setup-title{font-family:'Special Elite',cursive;font-size:32px;color:#2a2010;text-align:center;letter-spacing:2px;margin-bottom:4px}
+  .setup-sub{font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:3px;color:var(--text-secondary);text-align:center;text-transform:uppercase;margin-bottom:26px}
+  .setup-div{border:none;border-top:2px solid var(--border);margin:20px 0}
+  .side-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+  .side-choice{border:3px solid var(--border);border-radius:6px;padding:18px 12px;text-align:center;cursor:pointer;transition:all .2s;background:#fff}
+  .side-choice:hover{border-color:var(--highlight)}
+  .sc-axis{border-color:var(--axis-green)!important;background:var(--axis-bg)!important}
+  .sc-soviet{border-color:var(--soviet-red)!important;background:var(--soviet-bg)!important}
+  .side-icon{font-size:34px;margin-bottom:8px}
+  .side-name{font-family:'Oswald',sans-serif;font-size:17px;font-weight:700;letter-spacing:2px}
+  .side-desc{font-size:12px;color:var(--text-secondary);margin-top:4px;line-height:1.5}
+  /* TOAST */
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#2a2010;color:#f5e8c0;padding:12px 24px;border-radius:6px;font-family:'Oswald',sans-serif;font-size:14px;letter-spacing:1px;z-index:500;border:2px solid #8b6914;opacity:0;transition:opacity .3s;pointer-events:none}
+  .toast.show{opacity:1}
+  /* MISC */
+  .hidden{display:none!important}
+  @media(max-width:800px){.main{grid-template-columns:1fr}.sidebar{border-left:none;border-top:2px solid var(--border)}.side-grid{grid-template-columns:1fr}.setup-card{padding:20px}}
 </style>
-
 </head>
 <body>
+<div class="toast" id="toast"></div>
 
-<!-- SETUP SCREEN -->
+<!-- SETUP -->
 
 <div class="setup-screen" id="setupScreen">
-  <div class="setup-card">
-    <div class="setup-title">The Russian Campaign</div>
-    <div class="setup-subtitle">Deluxe 5th Edition — Computer Opponent</div>
-
-```
-<div class="input-group">
-  <div class="input-label">You play as:</div>
-  <div class="setup-option-grid">
-    <div class="side-choice" id="chooseAxis" onclick="selectSide('axis')">
-      <div class="side-icon">✠</div>
-      <div class="side-name" style="color:#7a9040">Axis</div>
-      <div class="side-desc">Germany & Allies<br>Computer plays Soviet</div>
-    </div>
-    <div class="side-choice" id="chooseSoviet" onclick="selectSide('soviet')">
-      <div class="side-icon">★</div>
-      <div class="side-name" style="color:#c0392b">Soviet</div>
-      <div class="side-desc">Red Army<br>Computer plays Axis</div>
+<div class="setup-card">
+  <div class="setup-title">The Russian Campaign</div>
+  <div class="setup-sub">Deluxe 5th Edition · Computer Opponent</div>
+  <div class="inp-grp"><div class="inp-lbl">You play as:</div>
+    <div class="side-grid">
+      <div class="side-choice" id="cAxis" onclick="selSide('axis')"><div class="side-icon">✠</div><div class="side-name" style="color:#2d5a1b">Axis</div><div class="side-desc">Germany &amp; Allies<br>Computer plays Soviet</div></div>
+      <div class="side-choice" id="cSov" onclick="selSide('soviet')"><div class="side-icon">★</div><div class="side-name" style="color:#8b1a1a">Soviet</div><div class="side-desc">Red Army<br>Computer plays Axis</div></div>
     </div>
   </div>
-</div>
-
-<hr class="setup-divider">
-
-<div class="input-group scenario-select">
-  <div class="input-label">Scenario:</div>
-  <select class="input-field" id="scenarioSelect">
-    <option value="campaign">Campaign Game (May/June 1941 – May/June 1945)</option>
-    <option value="breaking_storm">Breaking Storm (May/June 1941 – Jan/Feb 1942, 5 turns)</option>
-    <option value="barbarossa">Barbarossa (May/June 1941 – Nov/Dec 1942, 10 turns)</option>
-    <option value="fall_blau">Fall Blau (May/June 1942 – Jul/Aug 1943, 8 turns)</option>
-    <option value="zitadelle">Zitadelle (May/June 1943 – Mar/Apr 1944, 6 turns)</option>
-    <option value="bagration">Bagration (May/June 1944 – May/June 1945, 7 turns)</option>
-  </select>
-</div>
-
-<div class="input-group">
-  <div class="input-label">Optional Rules:</div>
-  <label style="font-size:12px; display:flex; gap:8px; align-items:center; margin-bottom:6px;">
-    <input type="checkbox" id="optHistoricalWeather"> Historical Weather (Rule 26.3)
-  </label>
-  <label style="font-size:12px; display:flex; gap:8px; align-items:center; margin-bottom:6px;">
-    <input type="checkbox" id="optStrategicMove"> Strategic Movement (Rule 26.10)
-  </label>
-  <label style="font-size:12px; display:flex; gap:8px; align-items:center;">
-    <input type="checkbox" id="optFortressCities"> Fortress Cities (Rule 26.9)
-  </label>
-</div>
-
-<hr class="setup-divider">
-
-<button class="btn btn-primary" onclick="startGame()">BEGIN CAMPAIGN</button>
-```
-
+  <div class="inp-grp"><div class="inp-lbl">Scenario:</div>
+    <select class="inp" id="scen">
+      <option value="campaign">Campaign Game (May/Jun 1941 – May/Jun 1945, 25 turns)</option>
+      <option value="breaking_storm">Breaking Storm (May/Jun 1941 – Jan/Feb 1942, 5 turns)</option>
+      <option value="barbarossa">Barbarossa (May/Jun 1941 – Nov/Dec 1942, 10 turns)</option>
+      <option value="fall_blau">Fall Blau (May/Jun 1942 – Jul/Aug 1943, 8 turns)</option>
+      <option value="zitadelle">Zitadelle (May/Jun 1943 – Mar/Apr 1944, 6 turns)</option>
+      <option value="bagration">Bagration (May/Jun 1944 – May/Jun 1945, 7 turns)</option>
+    </select>
   </div>
+  <div class="inp-grp"><div class="inp-lbl">Optional Rules:</div>
+    <label style="font-size:14px;display:flex;gap:10px;align-items:center;margin-bottom:8px;cursor:pointer"><input type="checkbox" id="optHW" style="width:18px;height:18px"> Historical Weather (Rule 26.3)</label>
+    <label style="font-size:14px;display:flex;gap:10px;align-items:center;margin-bottom:8px;cursor:pointer"><input type="checkbox" id="optSM" style="width:18px;height:18px"> Strategic Movement (Rule 26.10)</label>
+    <label style="font-size:14px;display:flex;gap:10px;align-items:center;cursor:pointer"><input type="checkbox" id="optFC" style="width:18px;height:18px"> Fortress Cities (Rule 26.9)</label>
+  </div>
+  <hr class="setup-div">
+  <div id="savedNotice" class="hidden info-box" style="margin-bottom:14px;text-align:center">
+    💾 A saved game was found.<br>
+    <button class="btn btn-ghost" style="margin-top:10px;width:auto;padding:8px 20px" onclick="loadGame()">RESUME SAVED GAME</button>
+  </div>
+  <button class="btn btn-primary" onclick="startGame()">BEGIN CAMPAIGN</button>
+</div>
 </div>
 
 <!-- HEADER -->
 
-<div class="header" id="gameHeader" style="display:none">
-  <div>
-    <div class="header-title">THE RUSSIAN CAMPAIGN</div>
-    <div class="header-sub" id="headerScenario">Campaign Game</div>
-  </div>
-  <div class="turn-display">
-    <div class="turn-label">Turn</div>
-    <div class="turn-number" id="headerTurn">1</div>
-    <div class="turn-label" id="headerMonth">May/Jun 1941</div>
-  </div>
-  <div>
-    <div class="weather-badge" id="weatherBadge">Clear</div>
-    <div style="font-size:10px; color:#888; text-align:center; margin-top:4px;">DRM: <span id="drmDisplay">0</span></div>
-  </div>
+<div class="hdr" id="gHdr" style="display:none">
+  <div><div class="hdr-title">The Russian Campaign</div><div class="hdr-sub" id="hScen">Campaign Game</div></div>
+  <div class="turn-box"><div class="turn-lbl">Turn</div><div class="turn-num" id="hTurn">1</div><div class="turn-lbl" id="hMonth">May/Jun 1941</div></div>
+  <div id="wxBadge" class="wx-badge wx-Clear">Clear</div>
+  <div class="hdr-drm"><div class="hdr-drm-lbl">DRM</div><div class="hdr-drm-val" id="hDRM">+0</div></div>
+  <button class="btn-save" onclick="saveGame()">💾 Save</button>
 </div>
 
-<!-- MAIN GAME -->
+<!-- MAIN -->
 
-<div class="main" id="gameMain" style="display:none">
+<div class="main" id="gMain" style="display:none">
+<div class="left">
 
-  <!-- LEFT: GAME LOG -->
-
-  <div class="game-log">
-
-```
-<!-- Phase Bar -->
-<div>
-  <div class="section-title">Current Phase</div>
-  <div class="phase-bar" id="phaseBar">
-    <div class="phase-step" id="ph0">Weather</div>
-    <div class="phase-step" id="ph1">1st Move</div>
-    <div class="phase-step" id="ph2">1st Combat</div>
-    <div class="phase-step" id="ph3">2nd Move</div>
-    <div class="phase-step" id="ph4">2nd Combat</div>
-    <div class="phase-step" id="ph5">End Phase</div>
-  </div>
-</div>
-
-<!-- Reinforcements Due -->
-<div id="reinforceSection" class="hidden">
-  <div class="section-title">Reinforcements This Turn</div>
-  <div id="reinforceContent"></div>
-</div>
-
-<!-- Computer Orders -->
-<div id="computerOrdersSection">
-  <div class="section-title" id="computerOrdersTitle">Computer Orders</div>
-  <div id="computerOrders">
-    <div style="color:#666; font-size:13px; font-style:italic;">Awaiting game start...</div>
-  </div>
-</div>
-
-<!-- Combat Resolution -->
-<div id="combatSection" class="hidden">
-  <div class="section-title">Combat Resolution</div>
-  <div id="combatContent"></div>
-</div>
-
-<!-- Player Input -->
-<div id="playerInputSection">
-  <div class="section-title" id="playerInputTitle">Your Actions</div>
-  <div class="input-area">
-    <div id="playerPrompt" style="font-size:13px; color:var(--parchment-dark); margin-bottom:12px; line-height:1.6;">
-      Set up the game and press "Ready" when the physical board matches the computer's orders.
+  <div><div class="sec-title">Current Phase</div>
+    <div class="phase-bar" id="phBar">
+      <div class="ph" id="ph0">Weather</div><div class="ph" id="ph1">1st Move</div>
+      <div class="ph" id="ph2">1st Combat</div><div class="ph" id="ph3">2nd Move</div>
+      <div class="ph" id="ph4">2nd Combat</div><div class="ph" id="ph5">End Phase</div>
     </div>
+  </div>
 
-    <!-- Combat declaration input -->
-    <div id="combatInputArea" class="hidden">
-      <div class="input-group">
-        <div class="input-label">Declare Combat — Attacker Hex(es):</div>
-        <input class="input-field" id="attackerHex" placeholder="e.g. R14, S14">
-      </div>
-      <div class="input-group">
-        <div class="input-label">Defender Hex:</div>
-        <input class="input-field" id="defenderHex" placeholder="e.g. S15">
-      </div>
-      <div class="input-group">
-        <div class="input-label">Attacker CF Total:</div>
-        <input class="input-field" id="attackerCF" type="number" placeholder="0">
-      </div>
-      <div class="input-group">
-        <div class="input-label">Defender CF Total:</div>
-        <input class="input-field" id="defenderCF" type="number" placeholder="0">
-      </div>
-      <div class="input-group">
-        <div class="input-label">Terrain Modifier:</div>
-        <select class="input-field" id="terrainMod">
-          <option value="1">None (×1)</option>
-          <option value="2">Defender doubled (city/mountain/river)</option>
-        </select>
-      </div>
-      <div class="input-group">
-        <div class="input-label">Air Support:</div>
-        <select class="input-field" id="airSupport">
-          <option value="0">None</option>
-          <option value="3">Stuka (+3 odds levels)</option>
-          <option value="1">Sturmovik (+1 odds level)</option>
-        </select>
-      </div>
-      <button class="btn btn-danger" onclick="resolveCombat()" style="margin-bottom:8px">RESOLVE COMBAT</button>
-      <button class="btn btn-ghost" onclick="cancelCombat()">Cancel</button>
-    </div>
+  <div id="reinfSec" class="hidden"><div class="sec-title">Reinforcements &amp; Events — This Turn</div><div id="reinfContent"></div></div>
 
-    <!-- Normal action buttons -->
-    <div id="actionButtons">
-      <div style="display:flex; flex-direction:column; gap:8px;">
-        <button class="btn btn-primary" id="mainActionBtn" onclick="mainAction()">READY — ADVANCE PHASE</button>
-        <button class="btn btn-ghost" onclick="declareCombat()" id="combatBtn" style="display:none">DECLARE COMBAT</button>
-        <button class="btn btn-ghost" onclick="rollWeather()" id="weatherBtn" style="display:none">ROLL WEATHER</button>
+  <div><div class="sec-title" id="ordTitle">Orders</div><div id="orders"><div style="color:var(--text-secondary);font-style:italic">Awaiting game start...</div></div></div>
+
+  <div id="combatSec" class="hidden"><div class="sec-title">Combat Resolution</div><div id="combatContent"></div></div>
+
+  <div><div class="sec-title">Your Actions</div>
+    <div class="input-area">
+      <div class="player-prompt" id="prompt">Set up the board and press Ready to begin.</div>
+      <div id="combatForm" class="hidden">
+        <div class="inp-grp"><div class="inp-lbl">Attacker Hex(es):</div><input class="inp" id="atkHex" placeholder="e.g. R14, S14"></div>
+        <div class="inp-grp"><div class="inp-lbl">Defender Hex:</div><input class="inp" id="defHex" placeholder="e.g. S15"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div class="inp-grp"><div class="inp-lbl">Attacker CF:</div><input class="inp" id="atkCF" type="number" placeholder="0" min="1"></div>
+          <div class="inp-grp"><div class="inp-lbl">Defender CF:</div><input class="inp" id="defCF" type="number" placeholder="0" min="1"></div>
+        </div>
+        <div class="inp-grp"><div class="inp-lbl">Terrain:</div>
+          <select class="inp" id="terrain"><option value="1">No doubling</option><option value="2">Defender doubled (city/mountain/river)</option></select>
+        </div>
+        <div class="inp-grp"><div class="inp-lbl">Air Support:</div>
+          <select class="inp" id="air"><option value="0">None</option><option value="3">Stuka (+3 odds levels)</option><option value="1">Sturmovik (+1 odds level)</option></select>
+        </div>
+        <button class="btn btn-combat" onclick="doRoll()">🎲 ROLL &amp; RESOLVE COMBAT</button>
+        <button class="btn btn-ghost" onclick="cancelCombat()">Cancel</button>
+      </div>
+      <div id="actionBtns">
+        <button class="btn btn-primary" id="mainBtn" onclick="mainAction()">READY</button>
+        <button class="btn btn-combat" id="combatBtn" onclick="openCombat()" style="display:none">RESOLVE A COMBAT</button>
+        <button class="btn btn-weather" id="wxBtn" onclick="doWeather()" style="display:none">🎲 ROLL WEATHER DIE</button>
       </div>
     </div>
   </div>
+
+  <div><div class="sec-title">Game Log</div><div class="log-box" id="logEl"></div></div>
+
 </div>
+<div class="sidebar">
 
-<!-- Game Log History -->
-<div>
-  <div class="section-title">Game Log</div>
-  <div class="log-history" id="gameLogHistory"></div>
-</div>
-```
-
-  </div>
-
-  <!-- RIGHT: SIDEBAR -->
-
-  <div class="sidebar">
-
-```
-<!-- Game Status -->
-<div>
-  <div class="section-title">Status</div>
-  <div class="stat-grid">
-    <div class="stat-box">
-      <div class="stat-value" id="statTurn">1</div>
-      <div class="stat-label">Turn</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-value" id="statDRM">0</div>
-      <div class="stat-label">Weather DRM</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-value" id="statAxisRail">6</div>
-      <div class="stat-label">Axis Rail Cap</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-value" id="statSovietRail">5</div>
-      <div class="stat-label">Soviet Rail Cap</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-value" id="statWorkerRP">0</div>
-      <div class="stat-label">Worker RPs</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-value" id="statStukas">3</div>
-      <div class="stat-label">Stukas Avail</div>
+  <div><div class="sec-title">Status</div>
+    <div class="stat-grid">
+      <div class="stat-box"><div class="stat-val" id="sTurn">1</div><div class="stat-lbl">Turn</div></div>
+      <div class="stat-box"><div class="stat-val" id="sDRM">+0</div><div class="stat-lbl">Weather DRM</div></div>
+      <div class="stat-box"><div class="stat-val" id="sARail">6</div><div class="stat-lbl">Axis Rail</div></div>
+      <div class="stat-box"><div class="stat-val" id="sSRail">5</div><div class="stat-lbl">Soviet Rail</div></div>
+      <div class="stat-box"><div class="stat-val" id="sAir">3/0</div><div class="stat-lbl">Stuka/Sturm</div></div>
+      <div class="stat-box"><div class="stat-val" id="sWRP">0</div><div class="stat-lbl">Worker RPs</div></div>
     </div>
   </div>
-</div>
 
-<!-- CRT Quick Reference -->
-<div>
-  <div class="section-title">Combat Results Table</div>
-  <table class="ref-table" id="crtTable">
-    <thead>
-      <tr>
-        <th>Die</th>
-        <th>1-6</th>
-        <th>1-4</th>
-        <th>1-2</th>
-        <th>1-1</th>
-        <th>2-1</th>
-        <th>3-1</th>
-        <th>4-1</th>
-        <th>6-1</th>
-        <th>9-1</th>
-      </tr>
-    </thead>
-    <tbody id="crtBody"></tbody>
-  </table>
-</div>
-
-<!-- Weather Quick Ref -->
-<div>
-  <div class="section-title">Weather Chart</div>
-  <table class="ref-table">
-    <thead>
-      <tr>
-        <th>Roll</th>
-        <th>Mar/Apr</th>
-        <th>Sep/Oct</th>
-        <th>Nov/Dec</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td>0-</td><td>Clear+3</td><td>Clear+1</td><td>LtMud+4</td></tr>
-      <tr><td>1-4</td><td>LtMud+2</td><td>Clear+1</td><td>LtMud+4</td></tr>
-      <tr><td>3</td><td>LtMud+2</td><td>Clear+1</td><td>Mud-2</td></tr>
-      <tr><td>4</td><td>LtMud+2</td><td>LtMud 0</td><td>Snow-3</td></tr>
-      <tr><td>5-6</td><td>Mud-3</td><td>LtMud 0</td><td>Snow-3</td></tr>
-      <tr><td>7+</td><td>Snow-6</td><td>Mud-3</td><td>Snow-3</td></tr>
-    </tbody>
-  </table>
-  <div style="font-size:10px; color:#666; margin-top:6px;">Jan/Feb = always Snow. May/Jun + Jul/Aug = always Clear.</div>
-</div>
-
-<!-- Movement Quick Ref -->
-<div>
-  <div class="section-title">Movement Allowance</div>
-  <table class="ref-table">
-    <thead>
-      <tr><th>Weather</th><th>1st Imp</th><th>GE Pz 2nd</th><th>GE Inf 2nd</th><th>Soviet 2nd</th></tr>
-    </thead>
-    <tbody>
-      <tr><td>Clear</td><td>Full MF</td><td>4</td><td>2</td><td>0</td></tr>
-      <tr><td>Lt Mud</td><td>Full MF</td><td>2</td><td>2</td><td>0</td></tr>
-      <tr><td>Mud</td><td>2 hex max</td><td>0</td><td>0</td><td>0</td></tr>
-      <tr><td>Snow</td><td>½ MF ↑</td><td>1</td><td>1</td><td>0</td></tr>
-    </tbody>
-  </table>
-  <div style="font-size:10px; color:#666; margin-top:6px;">HQs: 2nd impulse only, full MF, weather-immune.</div>
-</div>
-
-<!-- Supply Reminder -->
-<div>
-  <div class="section-title">Supply Rules</div>
-  <div style="font-size:11px; color:var(--parchment-dark); line-height:1.8;">
-    <div>• Max 8 hexes to friendly city/rail (4 in snow)</div>
-    <div>• Out of supply → eliminated at end phase</div>
-    <div>• <span style="color:var(--danger)">Winter Combat Supply:</span> Axis units must be in or adjacent to city (1941-42 winters)</div>
-    <div>• Axis units w/o combat supply: CF halved (round up)</div>
-    <div>• Supply line cannot pass through EZOC or enemy city</div>
+  <div><div class="sec-title">Combat Results Table</div>
+    <table class="ref-tbl"><thead><tr><th>Die</th><th>1-6</th><th>1-4</th><th>1-2</th><th>1-1</th><th>2-1</th><th>3-1</th><th>4-1</th><th>6-1</th><th>9-1</th></tr></thead><tbody id="crtBody"></tbody></table>
   </div>
-</div>
 
-<!-- Terrain Quick Ref -->
-<div>
-  <div class="section-title">Terrain Effects</div>
-  <div style="font-size:11px; color:var(--parchment-dark); line-height:1.9;">
-    <div>🏙️ <strong>Major City:</strong> Defender CF ×2</div>
-    <div>⛰️ <strong>Mountain:</strong> Defender CF ×2, all non-mtn stop</div>
-    <div>🌊 <strong>River:</strong> Defender CF ×2 (if all atk on river side)</div>
-    <div>🌲 <strong>Woods:</strong> Units stop (inf/mtn/para exempt)</div>
-    <div>🌿 <strong>Swamp:</strong> Units stop (clear in snow)</div>
-    <div>⚓ <strong>Kerch Strait:</strong> Stop in 1st hex; def ×2</div>
+  <div><div class="sec-title">Weather Chart</div>
+    <table class="ref-tbl">
+      <thead><tr><th>Roll</th><th>Mar/Apr</th><th>Sep/Oct</th><th>Nov/Dec</th></tr></thead>
+      <tbody>
+        <tr><td>0–</td><td>Clear +3</td><td>Clear +1</td><td>LtMud +4</td></tr>
+        <tr><td>1–4</td><td>LtMud +2</td><td>Clear +1</td><td>LtMud +4</td></tr>
+        <tr><td>3</td><td>LtMud +2</td><td>Clear +1</td><td>Mud –2</td></tr>
+        <tr><td>4</td><td>LtMud +2</td><td>LtMud 0</td><td>Snow –3</td></tr>
+        <tr><td>5–6</td><td>Mud –3</td><td>LtMud 0</td><td>Snow –3</td></tr>
+        <tr><td>7+</td><td>Snow –6</td><td>Mud –3</td><td>Snow –3</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box" style="margin-top:8px;font-size:12px">Jan/Feb = always Snow · May–Aug = always Clear</div>
   </div>
-</div>
-```
 
+  <div><div class="sec-title">Movement Allowance</div>
+    <table class="ref-tbl">
+      <thead><tr><th>Weather</th><th>1st Imp</th><th>GE Pz 2nd</th><th>GE Inf 2nd</th><th>Sov 2nd</th></tr></thead>
+      <tbody>
+        <tr><td>Clear</td><td>Full MF</td><td>4</td><td>2</td><td>0</td></tr>
+        <tr><td>Lt Mud</td><td>Full MF</td><td>2</td><td>2</td><td>0</td></tr>
+        <tr><td>Mud</td><td>2 max</td><td>0</td><td>0</td><td>0</td></tr>
+        <tr><td>Snow</td><td>½ MF ↑</td><td>1</td><td>1</td><td>0</td></tr>
+      </tbody>
+    </table>
+    <div class="info-box" style="margin-top:8px;font-size:12px">HQs: 2nd impulse only · Full MF · Weather-immune<br>Leaders: rail 1st impulse only · Cannot move otherwise</div>
   </div>
+
+  <div><div class="sec-title">Terrain Effects</div>
+    <div style="background:#fff;border:2px solid var(--border);border-radius:6px;padding:12px;font-size:13px;line-height:2.1">
+      <div>🏙️ <strong>Major City</strong> — Defender ×2</div>
+      <div>⛰️ <strong>Mountain</strong> — Def ×2 · Non-mtn units stop</div>
+      <div>🌊 <strong>River</strong> — Def ×2 if all attackers on river side</div>
+      <div>🌲 <strong>Woods</strong> — Units stop (inf/mtn/para/LW inf exempt)<br>&nbsp;&nbsp;&nbsp;Attackers: no retreat on AR/A1<br>&nbsp;&nbsp;&nbsp;Defenders: no retreat on DR/EX/D1</div>
+      <div>🌿 <strong>Swamp</strong> — Units stop · Clear terrain in Snow</div>
+      <div>⚓ <strong>Kerch Strait</strong> — Stop 1st hex · Def ×2</div>
+    </div>
+  </div>
+
+  <div><div class="sec-title">Supply</div>
+    <div style="background:#fff;border:2px solid var(--border);border-radius:6px;padding:12px;font-size:13px;line-height:2">
+      <div>• Max <strong>8 hexes</strong> to city or friendly rail hex</div>
+      <div>• <strong>4 hexes</strong> maximum in Snow</div>
+      <div>• Line cannot cross EZOC or enemy city</div>
+      <div>• Out of supply at End Phase → <strong>eliminated</strong></div>
+      <div style="color:var(--soviet-red);margin-top:4px">❄️ Winter Combat Supply (1941–42 + 1942–43):</div>
+      <div>Axis must be <strong>in/adjacent</strong> to city for full CF</div>
+      <div>Without combat supply: CF <strong>halved</strong> (round up)</div>
+    </div>
+  </div>
+
+  <div><div class="sec-title">Sudden Death Objectives</div>
+    <div style="background:#fff;border:2px solid var(--border);border-radius:6px;padding:12px;font-size:12px;line-height:1.8">
+      <div><strong>1942:</strong> Kiev, Kalinin, Leningrad, Rostov, Kharkov, Stalino</div>
+      <div><strong>1943:</strong> Maikop Oil, Moscow, Stalingrad, Kursk, Leningrad, Rostov</div>
+      <div><strong>1944:</strong> Leningrad, Smolensk, Kiev, Dnepropetrovsk, Sevastopol, Kharkov</div>
+      <div><strong>1945A:</strong> All German cities + 1 oil well</div>
+      <div><strong>1945S:</strong> 1 German city + all oil wells + Fin/Rom/Hun surrendered</div>
+      <div style="margin-top:6px;color:var(--text-secondary)">Checked at end of each Jan/Feb turn.</div>
+    </div>
+  </div>
+
+</div>
 </div>
 
 <script>
-// ============================================================
-// GAME DATA
-// ============================================================
-
-const TURNS = [
-  {n:0,  label:"Mar/Apr 1941",  season:"mar_apr", year:1941},
-  {n:1,  label:"May/Jun 1941",  season:"may_jun", year:1941},
-  {n:2,  label:"Jul/Aug 1941",  season:"jul_aug", year:1941},
-  {n:3,  label:"Sep/Oct 1941",  season:"sep_oct", year:1941},
-  {n:4,  label:"Nov/Dec 1941",  season:"nov_dec", year:1941},
-  {n:5,  label:"Jan/Feb 1942",  season:"jan_feb", year:1942},
-  {n:6,  label:"Mar/Apr 1942",  season:"mar_apr", year:1942},
-  {n:7,  label:"May/Jun 1942",  season:"may_jun", year:1942},
-  {n:8,  label:"Jul/Aug 1942",  season:"jul_aug", year:1942},
-  {n:9,  label:"Sep/Oct 1942",  season:"sep_oct", year:1942},
-  {n:10, label:"Nov/Dec 1942",  season:"nov_dec", year:1942},
-  {n:11, label:"Jan/Feb 1943",  season:"jan_feb", year:1943},
-  {n:12, label:"Mar/Apr 1943",  season:"mar_apr", year:1943},
-  {n:13, label:"May/Jun 1943",  season:"may_jun", year:1943},
-  {n:14, label:"Jul/Aug 1943",  season:"jul_aug", year:1943},
-  {n:15, label:"Sep/Oct 1943",  season:"sep_oct", year:1943},
-  {n:16, label:"Nov/Dec 1943",  season:"nov_dec", year:1943},
-  {n:17, label:"Jan/Feb 1944",  season:"jan_feb", year:1944},
-  {n:18, label:"Mar/Apr 1944",  season:"mar_apr", year:1944},
-  {n:19, label:"May/Jun 1944",  season:"may_jun", year:1944},
-  {n:20, label:"Jul/Aug 1944",  season:"jul_aug", year:1944},
-  {n:21, label:"Sep/Oct 1944",  season:"sep_oct", year:1944},
-  {n:22, label:"Nov/Dec 1944",  season:"nov_dec", year:1944},
-  {n:23, label:"Jan/Feb 1945",  season:"jan_feb", year:1945},
-  {n:24, label:"Mar/Apr 1945",  season:"mar_apr", year:1945},
-  {n:25, label:"May/Jun 1945",  season:"may_jun", year:1945},
+// ─── DATA ───────────────────────────────────────────────────
+const TURNS=[
+  {n:0,label:"Mar/Apr 1941",s:"mar_apr",y:1941},{n:1,label:"May/Jun 1941",s:"may_jun",y:1941},
+  {n:2,label:"Jul/Aug 1941",s:"jul_aug",y:1941},{n:3,label:"Sep/Oct 1941",s:"sep_oct",y:1941},
+  {n:4,label:"Nov/Dec 1941",s:"nov_dec",y:1941},{n:5,label:"Jan/Feb 1942",s:"jan_feb",y:1942},
+  {n:6,label:"Mar/Apr 1942",s:"mar_apr",y:1942},{n:7,label:"May/Jun 1942",s:"may_jun",y:1942},
+  {n:8,label:"Jul/Aug 1942",s:"jul_aug",y:1942},{n:9,label:"Sep/Oct 1942",s:"sep_oct",y:1942},
+  {n:10,label:"Nov/Dec 1942",s:"nov_dec",y:1942},{n:11,label:"Jan/Feb 1943",s:"jan_feb",y:1943},
+  {n:12,label:"Mar/Apr 1943",s:"mar_apr",y:1943},{n:13,label:"May/Jun 1943",s:"may_jun",y:1943},
+  {n:14,label:"Jul/Aug 1943",s:"jul_aug",y:1943},{n:15,label:"Sep/Oct 1943",s:"sep_oct",y:1943},
+  {n:16,label:"Nov/Dec 1943",s:"nov_dec",y:1943},{n:17,label:"Jan/Feb 1944",s:"jan_feb",y:1944},
+  {n:18,label:"Mar/Apr 1944",s:"mar_apr",y:1944},{n:19,label:"May/Jun 1944",s:"may_jun",y:1944},
+  {n:20,label:"Jul/Aug 1944",s:"jul_aug",y:1944},{n:21,label:"Sep/Oct 1944",s:"sep_oct",y:1944},
+  {n:22,label:"Nov/Dec 1944",s:"nov_dec",y:1944},{n:23,label:"Jan/Feb 1945",s:"jan_feb",y:1945},
+  {n:24,label:"Mar/Apr 1945",s:"mar_apr",y:1945},{n:25,label:"May/Jun 1945",s:"may_jun",y:1945},
 ];
+const CRT={"1-6":["AE","AE","AE","A1","AR","AR"],"1-5":["AE","AE","AE","A1","AR","AR"],"1-4":["AE","AE","A1","AR","AR","C"],"1-3":["AE","AE","A1","AR","AR","C"],"1-2":["AE","A1","AR","AR","C","EX"],"1-1":["A1","A1","AR","C","EX","DR"],"2-1":["A1","AR","C","EX","DR","D1"],"3-1":["AR","C","EX","DR","D1","DE"],"4-1":["C","EX","DR","D1","DE","DS"],"5-1":["EX","DR","D1","DE","DE","DS"],"6-1":["EX","DR","D1","DE","DE","DS"],"7-1":["DR","D1","DE","DE","DS","DS"],"9-1":["DR","D1","DE","DE","DS","DS"]};
+const COLS=["1-6","1-4","1-2","1-1","2-1","3-1","4-1","6-1","9-1"];
+const WX={jan_feb:{0:"Snow",1:"Snow",2:"Snow",3:"Snow",4:"Snow",5:"Snow",6:"Snow",7:"Snow"},mar_apr:{0:"Clear",1:"LtMud",2:"LtMud",3:"LtMud",4:"LtMud",5:"Mud",6:"Mud",7:"Snow"},may_jun:{0:"Clear",1:"Clear",2:"Clear",3:"Clear",4:"Clear",5:"Clear",6:"Clear",7:"Clear"},jul_aug:{0:"Clear",1:"Clear",2:"Clear",3:"Clear",4:"Clear",5:"Clear",6:"Clear",7:"Clear"},sep_oct:{0:"Clear",1:"Clear",2:"Clear",3:"Clear",4:"LtMud",5:"LtMud",6:"LtMud",7:"Mud"},nov_dec:{0:"LtMud",1:"LtMud",2:"LtMud",3:"Mud",4:"Snow",5:"Snow",6:"Snow",7:"Snow"}};
+const WXDRM={jan_feb:{0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0},mar_apr:{0:3,1:2,2:2,3:2,4:2,5:-3,6:-3,7:-6},may_jun:{0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0},jul_aug:{0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0},sep_oct:{0:1,1:1,2:1,3:1,4:0,5:0,6:0,7:-3},nov_dec:{0:4,1:4,2:4,3:-2,4:-3,5:-3,6:-3,7:-3}};
+const HWXT={3:"Mud",4:"LtMud",6:"Mud",9:"LtMud",10:"Snow",11:"LtMud",12:"LtMud",15:"Clear",16:"LtMud",17:"Snow",18:"LtMud",21:"LtMud",22:"Snow",24:"Mud"};
+const AIR={1941:{Clear:[3,0],LtMud:[1,0],Mud:[1,0],Snow:[0,0]},1942:{Clear:[2,0],LtMud:[1,0],Mud:[1,0],Snow:[0,0]},1943:{Clear:[1,1],LtMud:[0,0],Mud:[0,0],Snow:[0,0]},1944:{Clear:[0,2],LtMud:[0,1],Mud:[0,0],Snow:[0,0]},1945:{Clear:[0,3],LtMud:[0,1],Mud:[0,1],Snow:[0,0]}};
+const SC_START={campaign:1,breaking_storm:1,barbarossa:1,fall_blau:7,zitadelle:13,bagration:19};
+const SC_END={campaign:25,breaking_storm:5,barbarossa:10,fall_blau:14,zitadelle:18,bagration:25};
+const AXREINF={2:["Jul 1941: 2-7 Motorized, 8-7 Panzer, two 4-4 Infantry, 4-6 Romanian — enter from west edge"],3:["Sep 1941: Three 4-4 Infantry, 2-3 Finnish arrive"],4:["Nov 1941: 4-4 Infantry arrives"],7:["May 1942: ★ REPLACEMENTS — 1 Armor per Axis oil well, all SS/LW/HQs, one 3-4/4-4/5-4 German inf, one Mtn, one Mot, one per minor ally"],"7.5":["Jun 1942: LW Motorized 2-5-6, 3-4 Infantry arrive"],8:["Jul 1942: 3-4 and 2-3 arrive"],"8.5":["Aug 1942: 2-2 Romanian arrives"],9:["Sep 1942: 2-2 arrives"],"9.5":["Oct 1942: 2-4 arrives"],11:["Jan 1943: Two 9-8 Panzer, two 4-7, 2-3 arrive"],12:["Apr 1943: 6-7 and 3-4 Motorized arrive"],13:["May 1943: ★ REPLACEMENTS. 10-8 and 3-5 arrive"],14:["Jul 1943: Two 4-6 arrive. ★ MOTORIZATION: Exchange infantry for motorized (Rule 23)"],15:["Sep 1943: ★ ITALY SURRENDERS — remove all Italian units now. 4-4 arrives"],"15.5":["Oct 1943: 2-5-6 Motorized arrives"],16:["Nov 1943: 4-6 and 5-6 arrive. ★ MOTORIZATION exchange (Rule 23)"],19:["May 1944: ★ REPLACEMENTS. ★ MANDATORY: Withdraw 2 Panzer corps (SS first). Failure = Soviet wins. 3-4 arrives"],20:["Jul 1944: Three 4-7 arrive"],"20.5":["Aug 1944: Two 4-4 arrive"],21:["Sep 1944: Finland may surrender if Leningrad not Axis-controlled (auto each turn from now)"],"21.5":["Oct 1944: 5-5 arrives"],22:["Nov 1944: 10-8 and 3-3 arrive. ★ Withdraw 12th SS Infantry from map"],23:["Jan 1945: Two 5-7 arrive. Withdrawn panzers return. Exchange infantry→38th Panzer (28.4.3)"],24:["Mar 1945: 2-4, 3-4, 5-5, 5-7 arrive. ★ MANDATORY: Withdraw 1 German corps"],25:["May 1945: Two HQ Berlin 1-7 arrive. ★ MANDATORY: Withdraw 1 German corps"]};
+const SOVREINF={2:["Jul 1941: 5-3 (Moscow), 6-3 (East), four 4-3 (Moscow/Kursk/Stalino/Sevastopol) arrive"],3:["Sep 1941: Two 5-3, five 4-3 (Moscow/East), four 3-3, Paratroop arrive"],"3.5":["Oct 1941: 5-7 Tank (Moscow), two 1-2, 5-3, 4-3 (Rostov/Stalingrad) arrive"],4:["Nov 1941: Three 8-4 Guards, two 1-2, 7-4, three 6-3, two 5-3, 4-3, two Workers arrive"],"4.5":["Dec 1941: Two Workers, 3-3 (East) arrive"],5:["Jan 1942: 4-7 Tank, two Workers, two 1-Workers arrive. ★ ARCHANGEL REPLACEMENTS BEGIN — roll 1d6 each Soviet replacement phase (+1 DRM in 1943–44)"],6:["Mar 1942: 6-5 Tank, 10-7 Guards Tank, 7-4, Worker arrive"],7:["May 1942: Two 6-5 Tank, 7-4, 5-3, Worker arrive"],8:["Jul 1942: Two 6-5 Tank arrive"],9:["Sep 1942: Two 8-6 Guards Tank arrive"],10:["Nov 1942: 8-6 Guards Tank, Worker arrive"],11:["Jan 1943: Two 8-6 Guards Tank, 4-7 Guards Infantry arrive"],12:["Mar 1943: 7-4, 4-3, Worker arrive"],"12.5":["Apr 1943: Three 7-4 arrive. ★ EXCHANGE regular infantry armies → Guards infantry armies (28.4.5)"],13:["May 1943: 8-6 Tank arrives. ★ WORKER RP VALUES NOW DOUBLED all subsequent turns"],14:["Jul 1943: 8-6 Tank, 4-7 Guards arrive. ★ STURMOVIKS now available (Jul/Aug 1943+)"],15:["Sep 1943: 8-6 Guards Tank arrives"],16:["Nov 1943: 8-6 Guards Tank arrives"],17:["Jan 1944: ★ REPLACEMENT LIMIT UP — now 2 Guards + 2 Armor per turn (was 1 each)"]};
 
-// CRT: [odds_column][die_roll_1_to_6]
-const CRT = {
-  "1-6": ["AE","AE","AE","A1","AR","AR"],
-  "1-5": ["AE","AE","AE","A1","AR","AR"],
-  "1-4": ["AE","AE","A1","AR","AR","C"],
-  "1-3": ["AE","AE","A1","AR","AR","C"],
-  "1-2": ["AE","A1","AR","AR","C","EX"],
-  "1-1": ["A1","A1","AR","C","EX","DR"],
-  "2-1": ["A1","AR","C","EX","DR","D1"],
-  "3-1": ["AR","C","EX","DR","D1","DE"],
-  "4-1": ["C","EX","DR","D1","DE","DS"],
-  "5-1": ["EX","DR","D1","DE","DE","DS"],
-  "6-1": ["EX","DR","D1","DE","DE","DS"],
-  "7-1": ["DR","D1","DE","DE","DS","DS"],
-  "9-1": ["DR","D1","DE","DE","DS","DS"],
-};
+// ─── STATE ──────────────────────────────────────────────────
+let G={playerSide:'',computerSide:'',scenario:'campaign',turn:1,phase:0,axisFirst:true,weather:'Clear',drm:0,histWX:false,archActive:false,sturmActive:false,wrp:0,log:[]};
+const SAVE_KEY='trc5_v2';
 
-const CRT_COLS = ["1-6","1-4","1-2","1-1","2-1","3-1","4-1","6-1","9-1"];
+// ─── SAVE/LOAD ───────────────────────────────────────────────
+function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify({G,logHTML:document.getElementById('logEl').innerHTML}));toast('Game saved ✓');}catch(e){toast('Save failed');}}
+function loadGame(){try{const d=JSON.parse(localStorage.getItem(SAVE_KEY));if(!d)return;G=d.G;document.getElementById('setupScreen').style.display='none';document.getElementById('gHdr').style.display='flex';document.getElementById('gMain').style.display='grid';document.getElementById('hScen').textContent=scName(G.scenario);document.getElementById('logEl').innerHTML=d.logHTML||'';buildCRT();updHdr();updPhase();checkReinf();showPhase();toast('Game loaded ✓');}catch(e){toast('Load failed: '+e.message);}}
+function checkSave(){if(localStorage.getItem(SAVE_KEY))document.getElementById('savedNotice').classList.remove('hidden');}
 
-const WEATHER_CHART = {
-  "jan_feb": {0:"Snow",1:"Snow",2:"Snow",3:"Snow",4:"Snow",5:"Snow",6:"Snow",7:"Snow"},
-  "mar_apr": {0:"Clear",1:"LtMud",2:"LtMud",3:"LtMud",4:"LtMud",5:"Mud",6:"Mud",7:"Snow"},
-  "may_jun": {0:"Clear",1:"Clear",2:"Clear",3:"Clear",4:"Clear",5:"Clear",6:"Clear",7:"Clear"},
-  "jul_aug": {0:"Clear",1:"Clear",2:"Clear",3:"Clear",4:"Clear",5:"Clear",6:"Clear",7:"Clear"},
-  "sep_oct": {0:"Clear",1:"Clear",2:"Clear",3:"Clear",4:"LtMud",5:"LtMud",6:"LtMud",7:"Mud"},
-  "nov_dec": {0:"LtMud",1:"LtMud",2:"LtMud",3:"Mud",4:"Snow",5:"Snow",6:"Snow",7:"Snow"},
-};
-
-const WEATHER_DRM_MOD = {
-  "jan_feb": {0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0},
-  "mar_apr": {0:3,1:2,2:2,3:2,4:2,5:-3,6:-3,7:-6},
-  "may_jun": {0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0},
-  "jul_aug": {0:0,1:0,2:0,3:0,4:0,5:0,6:0,7:0},
-  "sep_oct": {0:1,1:1,2:1,3:1,4:0,5:0,6:0,7:-3},
-  "nov_dec": {0:4,1:4,2:4,3:-2,4:-3,5:-3,6:-3,7:-3},
-};
-
-const HISTORICAL_WEATHER = {
-  3:"Mud", 4:"LtMud", 9:"LtMud", 10:"Snow",
-  6:"Mud", 12:"Clear", 15:"Clear", 16:"LtMud",
-  11:"LtMud", 14:"LtMud", 15:"Clear",
-  17:"Snow", 21:"LtMud", 22:"Snow",
-};
-
-// Airpower availability [year][weather] = [stukas, sturmoviks]
-const AIR_AVAIL = {
-  1941: {Clear:[3,0], LtMud:[1,0], Mud:[1,0], Snow:[0,0]},
-  1942: {Clear:[2,0], LtMud:[1,0], Mud:[1,0], Snow:[0,0]},
-  1943: {Clear:[1,1], LtMud:[0,0], Mud:[0,0], Snow:[0,0]},
-  1944: {Clear:[0,2], LtMud:[0,1], Mud:[0,0], Snow:[0,0]},
-  1945: {Clear:[0,3], LtMud:[0,1], Mud:[0,1], Snow:[0,0]},
-};
-
-// Axis OB - simplified for key reinforcements
-const AXIS_REINFORCEMENTS = {
-  2: ["July 1941: 2-7 Motorized, 8-7 Panzer, 4-4 Infantry (×2), 4-6 Romanian enter from west edge"],
-  3: ["Sept 1941: 4-4 Infantry (×3), 2-3 Finnish enter"],
-  4: ["Nov 1941: 4-4 Infantry arrives"],
-  4.5: ["Dec 1941: 4-6 unit arrives"],
-  7: ["May 1942: REPLACEMENTS AVAILABLE — 1 Armor per oil well, SS, LW, HQs, 3-4/4-4/5-4 Inf, Mtn, Mot, minor allies"],
-  7.5: ["June 1942: 2-5-6 Motorized (Luftwaffe), 3-4 Infantry arrive"],
-  8: ["July 1942: 3-4, 2-3 units arrive"],
-  8.5: ["Aug 1942: 2-2 Romanian arrives"],
-  9: ["Sept 1942: 2-2 unit arrives"],
-  9.5: ["Oct 1942: 2-4 arrives"],
-  11: ["Jan 1943: 9-8 Panzer (×2), 4-7 (×2), 2-3 arrive"],
-  12: ["Apr 1943: 6-7, 3-4 Motorized arrive"],
-  13: ["May 1943: REPLACEMENTS. 10-8, 3-5 arrive"],
-  14: ["July 1943: 4-6 (×2) arrive. MOTORIZATION: Exchange infantry for motorized (Rule 23)"],
-  15: ["Sept 1943: Italy surrenders — remove all Italian units. 4-4 arrives"],
-  15.5: ["Oct 1943: 2-5-6 Motorized arrives"],
-  16: ["Nov 1943: 4-6, 5-6 arrive. MOTORIZATION exchange (Rule 23)"],
-  19: ["May 1944: REPLACEMENTS. WITHDRAW 2 Panzer corps (SS if possible). 3-4 arrives"],
-  20: ["July 1944: 4-7 (×3) arrive"],
-  20.5: ["Aug 1944: 4-4 (×2) arrive"],
-  21: ["Sept 1944: Finland may surrender (Rule 24.5)"],
-  21.5: ["Oct 1944: 5-5 arrives"],
-  22: ["Nov 1944: 10-8 arrives, 3-3 arrives. Withdraw 12th SS Infantry"],
-  23: ["Jan 1945: 5-7 (×2) arrive. 2 Panzers return. Exchange 1 infantry for 38th Panzer (Rule 28.4.3)"],
-  24: ["Mar 1945: 2-4, 3-4, 5-5, 5-7 arrive. WITHDRAW 1 German corps"],
-  25: ["May 1945: HQ Berlin 1-7 (×2) arrive. WITHDRAW 1 German corps"],
-};
-
-const SOVIET_REINFORCEMENTS = {
-  2: ["July 1941: 5-3 (Moscow), 6-3 (East), 4-3 (Moscow/Kursk/Stalino/Sevastopol) (×4), 5-3 (Sevastopol) arrive"],
-  3: ["Sept 1941: 5-3 (×2), 4-3 (Moscow/East ×5), 3-3 (×4), Paratroop arrives"],
-  3.5: ["Oct 1941: 5-7 Tank (Moscow), 1-2 (×2), 5-3, 4-3 (Rostov/Stalingrad) arrive"],
-  4: ["Nov 1941: 8-4 Guards (×3), 1-2 (×2), 7-4, 6-3 (×3), 5-3 (×2), 4-3, Worker (×2) arrive"],
-  4.5: ["Dec 1941: Workers (×2), 3-3 (East) arrive"],
-  5: ["Jan 1942: 4-7 Tank, Worker (×2), 1 (×2) arrive. ARCHANGEL REPLACEMENTS BEGIN (roll 1d6 each turn)"],
-  6: ["Mar 1942: 6-5 Tank, 10-7 Guards Tank, 7-4, Worker arrive"],
-  7: ["May 1942: 6-5 Tank (×2), 7-4, 5-3, Worker arrive"],
-  8: ["July 1942: 6-5 Tank (×2) arrive"],
-  9: ["Sept 1942: 8-6 Guards Tank (×2) arrive"],
-  10: ["Nov 1942: 8-6 Guards Tank, Worker arrive"],
-  11: ["Jan 1943: 8-6 Guards Tank (×2), 4-7 Guards Inf arrive"],
-  12: ["Mar 1943: 7-4, 4-3, Worker arrive"],
-  12.5: ["Apr 1943: 7-4 (×3) arrive. EXCHANGE infantry armies for Guards infantry (Rule 28.4.5)"],
-  13: ["May 1943: 8-6 Tank arrive. WORKER REPLACEMENT VALUES DOUBLED from this turn forward"],
-  14: ["July 1943: 8-6 Tank, 4-7 Guards arrive. STURMOVIKS now available (Jul/Aug 1943+)"],
-  15: ["Sept 1943: 8-6 Guards Tank arrive"],
-  16: ["Nov 1943: 8-6 Guards Tank arrive"],
-};
-
-// Scenario start turns
-const SCENARIO_START = {
-  campaign: 1, breaking_storm: 1, barbarossa: 1,
-  fall_blau: 7, zitadelle: 13, bagration: 19
-};
-const SCENARIO_END = {
-  campaign: 25, breaking_storm: 5, barbarossa: 10,
-  fall_blau: 14, zitadelle: 18, bagration: 25
-};
-
-// ============================================================
-// GAME STATE
-// ============================================================
-
-let gs = {
-  playerSide: null,        // 'axis' or 'soviet'
-  computerSide: null,
-  scenario: 'campaign',
-  turn: 1,                 // index into TURNS
-  phase: 0,                // 0=weather,1=1stMove,2=1stCombat,3=2ndMove,4=2ndCombat,5=endPhase
-  axisPlayerTurn: true,    // true = axis player turn active
-  weather: 'Clear',
-  weatherDRM: 0,
-  historicalWeather: false,
-  strategicMove: false,
-  fortressCities: false,
-  workerRPs: 0,
-  archangelActive: false,
-  sturmovikActive: false,
-  stukas: 3,
-  sturmoviks: 0,
-  axisRailCap: 6,
-  sovietRailCap: 5,
-  log: [],
-  combatLog: [],
-  optRules: {},
-};
-
-// ============================================================
-// SETUP
-// ============================================================
-
-let selectedSide = null;
-
-function selectSide(side) {
-  selectedSide = side;
-  document.getElementById('chooseAxis').className = 'side-choice' + (side==='axis'?' selected-axis':'');
-  document.getElementById('chooseSoviet').className = 'side-choice' + (side==='soviet'?' selected-soviet':'');
+// ─── SETUP ───────────────────────────────────────────────────
+let chosenSide=null;
+function selSide(s){chosenSide=s;document.getElementById('cAxis').className='side-choice'+(s==='axis'?' sc-axis':'');document.getElementById('cSov').className='side-choice'+(s==='soviet'?' sc-soviet':'');}
+function scName(s){return{campaign:'Campaign Game',breaking_storm:'Breaking Storm',barbarossa:'Barbarossa',fall_blau:'Fall Blau',zitadelle:'Zitadelle',bagration:'Bagration'}[s]||s;}
+function startGame(){
+  if(!chosenSide){alert('Please choose a side.');return;}
+  const sc=document.getElementById('scen').value;
+  G={playerSide:chosenSide,computerSide:chosenSide==='axis'?'soviet':'axis',scenario:sc,turn:SC_START[sc],phase:0,axisFirst:true,weather:'Clear',drm:0,histWX:document.getElementById('optHW').checked,archActive:false,sturmActive:false,wrp:0,log:[]};
+  document.getElementById('setupScreen').style.display='none';
+  document.getElementById('gHdr').style.display='flex';
+  document.getElementById('gMain').style.display='grid';
+  document.getElementById('hScen').textContent=scName(sc);
+  buildCRT();updHdr();updPhase();checkReinf();
+  showSetup();
+  addLog('=== GAME START: '+scName(sc)+' ===',true);
+  addLog('You play: '+G.playerSide.toUpperCase()+' | Computer: '+G.computerSide.toUpperCase());
 }
 
-function startGame() {
-  if (!selectedSide) { alert('Please choose a side.'); return; }
-  gs.playerSide = selectedSide;
-  gs.computerSide = selectedSide === 'axis' ? 'soviet' : 'axis';
-  gs.scenario = document.getElementById('scenarioSelect').value;
-  gs.historicalWeather = document.getElementById('optHistoricalWeather').checked;
-  gs.strategicMove = document.getElementById('optStrategicMove').checked;
-  gs.fortressCities = document.getElementById('optFortressCities').checked;
-  gs.turn = SCENARIO_START[gs.scenario];
-
-  document.getElementById('setupScreen').style.display = 'none';
-  document.getElementById('gameHeader').style.display = 'flex';
-  document.getElementById('gameMain').style.display = 'grid';
-
-  document.getElementById('headerScenario').textContent = getScenarioName(gs.scenario);
-
-  buildCRT();
-  initGame();
+// ─── CRT BUILD ───────────────────────────────────────────────
+function buildCRT(){
+  const b=document.getElementById('crtBody');b.innerHTML='';
+  const cc={'AE':'cAE','A1':'cA1','AR':'cAR','C':'cC','EX':'cEX','DR':'cDR','D1':'cD1','DE':'cDE','DS':'cDS'};
+  for(let d=1;d<=6;d++){const r=document.createElement('tr');r.innerHTML=`<td style="font-weight:700;color:var(--section-title)">${d}</td>`;COLS.forEach(c=>{const res=CRT[c][d-1];r.innerHTML+=`<td class="${cc[res]||''}">${res}</td>`;});b.appendChild(r);}
 }
 
-function getScenarioName(s) {
-  return {
-    campaign:'Campaign Game', breaking_storm:'Breaking Storm',
-    barbarossa:'Barbarossa', fall_blau:'Fall Blau',
-    zitadelle:'Zitadelle', bagration:'Bagration'
-  }[s] || s;
+// ─── HEADER ──────────────────────────────────────────────────
+function updHdr(){
+  const t=TURNS[G.turn]||TURNS[TURNS.length-1];
+  document.getElementById('hTurn').textContent=G.turn;
+  document.getElementById('hMonth').textContent=t.label;
+  document.getElementById('sTurn').textContent=G.turn;
+  const ds=(G.drm>=0?'+':'')+G.drm;
+  document.getElementById('hDRM').textContent=ds;
+  document.getElementById('sDRM').textContent=ds;
+  const airData=(AIR[t.y]||AIR[1941])[G.weather]||[0,0];
+  document.getElementById('sAir').textContent=airData[0]+'/'+airData[1];
+  G.axisRail=G.weather==='Snow'?3:6;
+  document.getElementById('sARail').textContent=G.axisRail;
+  document.getElementById('sSRail').textContent=5;
+  document.getElementById('sWRP').textContent=G.wrp;
+  const b=document.getElementById('wxBadge');b.textContent=G.weather;b.className='wx-badge wx-'+G.weather;
 }
 
-// ============================================================
-// CRT TABLE BUILD
-// ============================================================
+// ─── PHASE BAR ───────────────────────────────────────────────
+const PLBLS=['Weather','1st Move','1st Combat','2nd Move','2nd Combat','End Phase'];
+function updPhase(){for(let i=0;i<6;i++){const e=document.getElementById('ph'+i);e.textContent=PLBLS[i];e.className='ph'+(i<G.phase?' done':i===G.phase?' active':'');}}
 
-function buildCRT() {
-  const body = document.getElementById('crtBody');
-  const resultColors = {
-    AE:'#c0392b', A1:'#e07020', AR:'#d4a820',
-    C:'#608060', EX:'#c060c0',
-    DR:'#d4a820', D1:'#e07020', DE:'#c0392b', DS:'#8b1a1a'
-  };
-  for (let die = 1; die <= 6; die++) {
-    const row = document.createElement('tr');
-    row.innerHTML = `<td style="color:var(--highlight);font-weight:bold">${die}</td>`;
-    CRT_COLS.forEach(col => {
-      const result = CRT[col][die-1];
-      const color = resultColors[result] || '#888';
-      row.innerHTML += `<td class="result-cell" style="color:${color}">${result}</td>`;
-    });
-    body.appendChild(row);
+// ─── WEATHER ─────────────────────────────────────────────────
+function doWeather(){
+  const t=TURNS[G.turn],s=t.s;
+  if(G.histWX){G.weather=HWXT[G.turn]||(s==='jan_feb'?'Snow':(s==='may_jun'||s==='jul_aug')?'Clear':'Clear');addLog('Turn '+G.turn+' ('+t.label+'): Historical weather — '+G.weather);}
+  else if(s==='jan_feb'){G.weather='Snow';addLog('Turn '+G.turn+' ('+t.label+'): Jan/Feb — automatically Snow');}
+  else if(s==='may_jun'||s==='jul_aug'){G.weather='Clear';addLog('Turn '+G.turn+' ('+t.label+'): Summer — automatically Clear');}
+  else{const die=d6(),adj=Math.max(0,Math.min(7,die+G.drm));G.weather=WX[s][adj];const mod=WXDRM[s][adj]||0,old=G.drm;G.drm+=mod;addLog('Turn '+G.turn+' ('+t.label+'): Roll '+die+' + DRM '+(old>=0?'+':'')+old+' = '+adj+' → '+G.weather+' (new DRM '+(G.drm>=0?'+':'')+G.drm+')');}
+  updHdr();
+  hide('wxBtn');show('mainBtn');
+  document.getElementById('mainBtn').textContent='PROCEED TO MOVEMENT';
+  setPrompt('Weather: '+G.weather+'. '+(isComp()?'Computer moves next. Press to see orders.':'Your move. Press to begin.'));
+  G.phase=0;
+}
+
+// ─── PHASE CONTROL ────────────────────────────────────────────
+function mainAction(){if(G.phase===0&&G.axisFirst){G.phase=1;updPhase();showPhase();}else{advPhase();}}
+function advPhase(){G.phase++;if(G.phase>5){if(G.axisFirst){G.axisFirst=false;G.phase=1;addLog('--- Soviet Player Turn ---',true);}else{endTurn();return;}}updPhase();showPhase();}
+function isComp(){return(G.axisFirst&&G.computerSide==='axis')||(!G.axisFirst&&G.computerSide==='soviet');}
+function curSide(){return G.axisFirst?'axis':'soviet';}
+
+function showPhase(){
+  const side=curSide(),comp=isComp(),t=TURNS[G.turn];
+  hide('combatBtn');hide('wxBtn');show('mainBtn');
+  document.getElementById('combatForm').classList.add('hidden');
+  show('actionBtns');
+  if(G.phase===0){hide('mainBtn');show('wxBtn');setPrompt('Roll the weather die for Turn '+G.turn+' ('+t.label+').');return;}
+  const air=(AIR[t.y]||AIR[1941])[G.weather]||[0,0];
+  const wxNote={Clear:'Full MF. GE armor 2nd impulse: 4 hex.',LtMud:'Full MF. GE armor 2nd impulse: 2 hex.',Mud:'⚠ MUD: Max 2 hexes. No 2nd impulse.',Snow:'⚠ SNOW: Half MF (round up). Rail cap 3. Winter combat supply applies!'}[G.weather]||'';
+  const imp2={Clear:'4',LtMud:'2',Mud:'0',Snow:'1'}[G.weather]||'4';
+  if(G.phase===1){
+    if(comp){mkOrders(side,side.toUpperCase()+' 1st Impulse Movement',compMoves(side,t,air,imp2));setPrompt('Execute the computer\'s movement on the board. Press when done.');document.getElementById('mainBtn').textContent='MOVES DONE — GO TO COMBAT';}
+    else{mkOrders(side,'YOUR '+side.toUpperCase()+' 1st Impulse Movement',[{t:'info',x:'Make your 1st impulse movement on the board. '+wxNote},{t:'rail',x:'Rail capacity: '+(side==='axis'?G.axisRail:5)+' units. New reinforcements/replacements get free rail moves.'},{t:'info',x:'Air: '+air[0]+' Stuka(s) (+3 odds), '+air[1]+' Sturmovik(s) (+1 odds). Use "Resolve a Combat" for any AVs during movement.'},{t:'combat',x:'Units MUST attack if they cannot escape EZOC. Soaking-off (1-6 min) is legal.'}]);setPrompt('Complete your movement on the physical board. Resolve any AVs needed. Press when done.');document.getElementById('mainBtn').textContent='MOVEMENT COMPLETE';show('combatBtn');}
+  }else if(G.phase===2){
+    if(comp){mkOrders(side,side.toUpperCase()+' 1st Impulse Combat',compCombats(side,t,air));setPrompt('The computer declares these combats. Resolve each on the board. Use "Resolve a Combat" to roll. Press when all done.');document.getElementById('mainBtn').textContent='ALL COMBATS RESOLVED';show('combatBtn');}
+    else{mkOrders(side,'YOUR '+side.toUpperCase()+' 1st Impulse Combat',[{t:'info',x:'Declare and resolve all combats. Units in EZOC MUST attack (min 1-6 odds).'},{t:'info',x:'Air: '+air[0]+' Stuka (+3 odds per battle max 1), '+air[1]+' Sturmovik (+1 per battle, multiple ok, max 3 combined shifts).'},{t:'info',x:'Attacker can declare lower odds than available (soaking-off). Must announce before rolling.'},{t:'combat',x:'Use "Resolve a Combat" below for each battle to calculate odds and roll the CRT.'}]);setPrompt('Declare and resolve all your combats. Press when done.');document.getElementById('mainBtn').textContent='ALL COMBATS DONE';show('combatBtn');}
+  }else if(G.phase===3){
+    if(comp){mkOrders(side,side.toUpperCase()+' 2nd Impulse Movement',compMoves2(side,imp2));setPrompt('Execute computer 2nd impulse moves. Press when done.');document.getElementById('mainBtn').textContent='2ND MOVES DONE';}
+    else{mkOrders(side,'YOUR '+side.toUpperCase()+' 2nd Impulse Movement',[{t:'info',x:(side==='soviet'?'Soviet infantry CANNOT move 2nd impulse. Only armor/mech + Stavka.':'German armor/mech: '+imp2+' hexes. Army Group HQs: full MF (weather-immune).')},{t:'info',x:'No rail movement. No Stukas/Sturmoviks. Only HQ replacements allowed.'},{t:'info',x:'Units that started this impulse in EZOC may NOT move (even if enemy eliminated by AV).'}]);setPrompt('Make your 2nd impulse moves. Press when done.');document.getElementById('mainBtn').textContent='2ND MOVEMENT COMPLETE';show('combatBtn');}
+  }else if(G.phase===4){
+    mkOrders(side,(comp?side.toUpperCase():('YOUR '+side.toUpperCase()))+' 2nd Impulse Combat',[{t:'info',x:'Resolve any mandatory 2nd impulse combats. No air support (Stukas/Sturmoviks) this impulse.'},{t:'info',x:'Units that conducted an AV in 1st impulse and are adjacent to enemy must be attacked by OTHER friendly units, or the AV units must surrender.'}]);
+    setPrompt('Resolve any 2nd impulse combats. Press when done.');document.getElementById('mainBtn').textContent='2ND COMBATS DONE';show('combatBtn');
+  }else if(G.phase===5){
+    mkOrders(side,side.toUpperCase()+' End Phase',endPhase(side));
+    setPrompt('Complete all end phase tasks on the board. Press when done.');document.getElementById('mainBtn').textContent='END PHASE COMPLETE';
   }
 }
 
-// ============================================================
-// GAME INIT
-// ============================================================
-
-function initGame() {
-  gs.phase = 0;
-  gs.axisPlayerTurn = true;
-  updateHeader();
-  updatePhaseBar();
-  showSetupInstructions();
-  addLog(`=== GAME START: ${getScenarioName(gs.scenario)} ===`);
-  addLog(`You play: ${gs.playerSide.toUpperCase()} | Computer: ${gs.computerSide.toUpperCase()}`);
-  checkReinforcements();
-}
-
-// ============================================================
-// HEADER UPDATE
-// ============================================================
-
-function updateHeader() {
-  const t = TURNS[gs.turn];
-  document.getElementById('headerTurn').textContent = gs.turn;
-  document.getElementById('headerMonth').textContent = t.label;
-  document.getElementById('statTurn').textContent = gs.turn;
-  document.getElementById('drmDisplay').textContent = (gs.weatherDRM >= 0 ? '+' : '') + gs.weatherDRM;
-  document.getElementById('statDRM').textContent = (gs.weatherDRM >= 0 ? '+' : '') + gs.weatherDRM;
-
-  // Update airpower
-  const year = t.year;
-  const air = AIR_AVAIL[year] ? AIR_AVAIL[year][gs.weather] || [0,0] : [0,0];
-  gs.stukas = air[0];
-  gs.sturmoviks = air[1];
-  document.getElementById('statStukas').textContent = `${gs.stukas}/${gs.sturmoviks}`;
-
-  // Rail cap
-  gs.axisRailCap = gs.weather === 'Snow' ? 3 : 6;
-  document.getElementById('statAxisRail').textContent = gs.axisRailCap;
-
-  // Weather badge
-  const badge = document.getElementById('weatherBadge');
-  badge.textContent = gs.weather;
-  badge.className = 'weather-badge weather-' + gs.weather.toLowerCase().replace(' ','').replace('ltmud','ltmud');
-
-  document.getElementById('statWorkerRP').textContent = gs.workerRPs;
-}
-
-// ============================================================
-// WEATHER
-// ============================================================
-
-function rollWeather() {
-  const t = TURNS[gs.turn];
-  const season = t.season;
-
-  if (gs.historicalWeather) {
-    gs.weather = HISTORICAL_WEATHER[gs.turn] || (
-      season === 'jan_feb' ? 'Snow' :
-      (season === 'may_jun' || season === 'jul_aug') ? 'Clear' : 'Clear'
-    );
-    addLog(`Turn ${gs.turn} (${t.label}): Historical weather — ${gs.weather}`);
-  } else if (season === 'jan_feb') {
-    gs.weather = 'Snow';
-    addLog(`Turn ${gs.turn} (${t.label}): January/February — automatically Snow`);
-  } else if (season === 'may_jun' || season === 'jul_aug') {
-    gs.weather = 'Clear';
-    addLog(`Turn ${gs.turn} (${t.label}): Summer — automatically Clear`);
-  } else {
-    const die = rollDie();
-    const adjusted = Math.max(0, Math.min(7, die + gs.weatherDRM));
-    const rollKey = adjusted >= 7 ? 7 : adjusted;
-    gs.weather = WEATHER_CHART[season][rollKey] || 'Clear';
-    const drmMod = WEATHER_DRM_MOD[season][rollKey] || 0;
-    gs.weatherDRM += drmMod;
-    addLog(`Turn ${gs.turn} (${t.label}): Weather roll ${die} + DRM ${gs.weatherDRM - drmMod} = ${adjusted} → ${gs.weather} (DRM now ${gs.weatherDRM >= 0 ? '+' : ''}${gs.weatherDRM})`);
+// ─── AI ORDER GENERATORS ──────────────────────────────────────
+function compMoves(side,t,air,imp2){
+  const yr=t.y,o=[];
+  o.push({t:'info',x:'AI '+side.toUpperCase()+' · Turn '+G.turn+' ('+t.label+') · Weather: '+G.weather});
+  o.push({t:'info',x:'Enter reinforcements/replacements first, then move units.'});
+  if(side==='axis'){
+    if(yr===1941&&G.turn<=3){o.push({t:'move',x:'AGN: Drive toward Leningrad along Baltic coast. Finnish units push south toward Leningrad.',hex:'North'});o.push({t:'move',x:'AGC: Advance on Smolensk–Moscow axis. Armor leads; infantry maintains continuous ZOC coverage.',hex:'Center'});o.push({t:'move',x:'AGS: Drive toward Kiev, then Dnepropetrovsk and Stalino. Romanians cover flank toward Odessa.',hex:'South'});o.push({t:'rail',x:'Rail '+(G.weather==='Snow'?3:6)+' units to forward positions (+ free moves for new reinforcements).',hex:'Rail'});}
+    else if(yr===1941){o.push({t:'move',x:G.weather==='Snow'?'SNOW: Consolidate. Do not overextend. Verify all forward units trace supply.':'Push toward Moscow before winter deepens. Exploit any breakthroughs.',hex:'All Fronts'});}
+    else if(yr===1942){o.push({t:'move',x:'FALL BLAU: Southern thrust — Stalingrad and Caucasus oil (Maikop/Grozny). Northern front holds.',hex:'South'});o.push({t:'move',x:'Maintain Leningrad siege. Finnish units hold southern Finland line.',hex:'North'});}
+    else{o.push({t:'move',x:'DEFENSIVE: River/city line. Panzer reserves positioned for local counterattacks. Shorten line.',hex:'Defense'});if(yr>=1944)o.push({t:'move',x:'Fall back toward Warsaw–Budapest–Bucharest. Delay while preserving forces.',hex:'Withdrawal'});}
+    o.push({t:'info',x:G.weather==='Mud'?'⚠ MUD: Max 2 hexes. No 2nd impulse.':G.weather==='Snow'?'⚠ SNOW: Half MF (round up). Rail cap 3. Winter combat supply check required.':'Movement normal. Units stop in first EZOC entered.'});
+    o.push({t:'info',x:'Air: '+air[0]+' Stuka(s) available for combat phase. Each raises odds by 3 levels (1 per battle).'});
+  }else{
+    if(yr===1941){o.push({t:'move',x:'STRATEGIC WITHDRAWAL: Trade space for time. Avoid encirclements. Keep supply lines.',hex:'All Fronts'});o.push({t:'move',x:'MOSCOW: Keep Stavka and Stalin in Moscow. Garrison city heavily.',hex:'Moscow'});o.push({t:'move',x:'LENINGRAD: Hold city. Keep Worker unit inside.',hex:'Leningrad'});o.push({t:'rail',x:'Rail 5 units to reinforce threatened sectors.',hex:'Rail'});o.push({t:'info',x:'Place partisans in Axis city or rail hex. Not in EZOC. Not within 5 hexes of SS unit.'});}
+    else if(yr===1942){o.push({t:'move',x:'STALINGRAD: Mass forces at Stalingrad and Don River line. Hold at all costs.',hex:'Stalingrad'});o.push({t:'move',x:'Build armored reserve east of Moscow for winter counteroffensive.',hex:'Reserve'});if(G.turn>=10)o.push({t:'move',x:'WINTER PREP: Mass armor for encirclement. Soviet AVs now available from Nov/Dec 1942.',hex:'Counterattack'});}
+    else{o.push({t:'move',x:'OFFENSIVE: Attack on broad front. Prioritize encirclements. Exploit with armor.',hex:'Offensive'});o.push({t:'move',x:'Push toward Berlin via Poland. Force minor ally surrenders.',hex:'Strategic'});if(G.sturmActive)o.push({t:'info',x:'Sturmoviks: '+air[1]+' available (each +1 odds, multiple ok, max 3 combined). Must be within 8 hexes of Stavka.'});}
+    o.push({t:'info',x:'Soviet infantry: ZERO 2nd impulse movement. Armor/mech: '+imp2+' hexes 2nd impulse.'});
   }
-
-  updateHeader();
-  document.getElementById('weatherBtn').style.display = 'none';
-  showOrders();
+  return o;
+}
+function compMoves2(side,imp2){
+  if(side==='axis')return[{t:'info',x:'German armor/mech: '+imp2+' hexes 2nd impulse. Exploit gaps. HQs move full MF (weather-immune).'},{t:'info',x:'No rail movement. No Stukas. HQ replacements only.'}];
+  return[{t:'info',x:'Soviet infantry: ZERO 2nd impulse movement.'},{t:'move',x:'Soviet armor/mechanized: '+imp2+' hexes. Stavka: full MF (weather-immune).',hex:'Mobile'}];
+}
+function compCombats(side,t,air){
+  const o=[{t:'info',x:'AI attacks where 3-1 or better odds achievable. Below 3-1 only when tactically necessary.'}];
+  if(side==='axis'){o.push({t:'combat',x:'Stukas: '+air[0]+' available. +3 odds per Stuka. One per battle. Must be within 8 hexes of Army Group HQ.',hex:'Air'});o.push({t:'combat',x:'Seek AV attacks (10-1) on isolated Soviet units during movement phase. AV units cannot combat later.',hex:'AV'});o.push({t:'info',x:'Attacker chooses retreat direction on DR results. Push defenders away from cities.'});}
+  else{if(t.y<1943)o.push({t:'combat',x:'Soviet attacks cautiously — 2-1 or better preferred in early war. Preserve forces.',hex:'Caution'});else o.push({t:'combat',x:'Soviet attacks aggressively. Seek encirclements and deep penetrations.',hex:'Offensive'});if(G.turn>=10)o.push({t:'combat',x:'AV attacks available from Nov/Dec 1942. Mass 10-1 to eliminate isolated Axis units during movement.',hex:'AV'});if(G.sturmActive)o.push({t:'info',x:'Sturmoviks: '+air[1]+' available. Multiple per battle ok (max 3 combined shifts with artillery). 8 hexes from Stavka.'});}
+  return o;
+}
+function endPhase(side){
+  const o=[{t:'info',x:'1. Advance Railhead markers to reflect rail conversion.'},{t:'info',x:'2. Check supply for ALL friendly units (8-hex path to city/rail; 4 hexes in Snow).'},{t:'info',x:'3. ELIMINATE all out-of-supply units (exceptions: paratroops, partisans, sea-invasion units this turn).'}];
+  if(side==='soviet'){o.push({t:'info',x:'4. Minor ally surrender checks: Hungary (5+ Soviet units inside), Romania (Bucharest captured), Italy (auto Sep/Oct 1943), Finland (Helsinki captured or Sep/Oct 1944+ without Leningrad).'});o.push({t:'info',x:'5. Relocate all Russian partisans (new Axis city or rail hex per Rule 19.1).'});o.push({t:'info',x:'6. Advance Turn marker to next TRT space. Flip to Axis side.'});if(TURNS[G.turn]&&TURNS[G.turn].s==='jan_feb')o.push({t:'combat',x:'★ SUDDEN DEATH VICTORY CHECK — see Sudden Death Objectives in sidebar!',hex:'Victory!'});}
+  else o.push({t:'info',x:'4. Flip Turn marker to Soviet side.'});
+  return o;
 }
 
-// ============================================================
-// PHASE MANAGEMENT
-// ============================================================
+// ─── RENDER ──────────────────────────────────────────────────
+function mkOrders(side,title,items){
+  const p=side==='axis'?'ap':'sp',sb=side==='axis'?'sb-axis':'sb-soviet',ic=side==='axis'?'✠':'★';
+  let h=`<div class="orders-panel ${p}"><div class="orders-hdr"><span class="side-badge ${sb}">${ic} ${side.toUpperCase()}</span><span class="orders-title">${title}</span></div><ul class="order-list">`;
+  items.forEach((o,i)=>{const hx=o.hex?`<span class="order-hex">${o.hex}</span>`:'';h+=`<li class="order-item ${o.t}"><span class="order-num">${i+1}</span><span class="order-text">${o.x}${hx}</span></li>`;});
+  h+='</ul></div>';
+  document.getElementById('orders').innerHTML=h;
+  document.getElementById('ordTitle').textContent=title;
+}
 
-const PHASES = ['Weather','1st Movement','1st Combat','2nd Movement','2nd Combat','End Phase'];
-const AXIS_PHASES = ['Weather Determination','Axis 1st Impulse Movement','Axis 1st Impulse Combat',
-  'Axis 2nd Impulse Movement','Axis 2nd Impulse Combat','Axis End Phase'];
-const SOVIET_PHASES = ['(Axis Weather)','Soviet 1st Impulse Movement','Soviet 1st Impulse Combat',
-  'Soviet 2nd Impulse Movement','Soviet 2nd Impulse Combat','Soviet End Phase'];
-
-function updatePhaseBar() {
-  for (let i = 0; i < 6; i++) {
-    const el = document.getElementById('ph' + i);
-    el.textContent = PHASES[i];
-    el.className = 'phase-step' + (i < gs.phase ? ' done' : i === gs.phase ? ' active' : '');
+// ─── SETUP INSTRUCTIONS ───────────────────────────────────────
+function showSetup(){
+  const items=[];
+  if(['campaign','breaking_storm','barbarossa'].includes(G.scenario)){
+    items.push({t:'info',x:'RUSSIAN SETUP (first): Place Soviet at-start units. "C" units go in specified cities. Others anywhere in Military District (L=Leningrad, B=Baltic, W=Western, K=Kiev, O=Odessa).'});
+    items.push({t:'info',x:'AXIS SETUP (second): Place Axis units in Germany/Poland/Hungary/Romania, not adjacent to Russian units. "R" units = Romania, "F" units = Finland.'});
+    items.push({t:'info',x:'SUDDEN DEATH MARKERS: Place 1942 markers at Kiev, Kalinin, Leningrad, Rostov, Kharkov, and Stalino.'});
+    items.push({t:'info',x:'RAIL CONVERSION: Axis controls all rail on west side of start line. Place RR markers at start line.'});
+    items.push({t:'combat',x:'TURN 1 RESTRICTION: AGN attacks Baltic MD only · AGC attacks Western MD only · AGS attacks Kiev MD only (2nd impulse: no restriction).'});
+  }else{
+    items.push({t:'info',x:'Set up using the '+scName(G.scenario)+' scenario card. Start line: '+({fall_blau:'blue (Fall Blau)',zitadelle:'black (Zitadelle)',bagration:'red (Bagration)'}[G.scenario]||'as shown')+'.'});
+    items.push({t:'info',x:'Weather DRM at start: '+({fall_blau:'–1',zitadelle:'0',bagration:'+1'}[G.scenario]||'0')+'. Set the DRM marker on the track.'});
+    items.push({t:'info',x:'Both sides must cover every hex on their side of the start line (occupied or in ZOC).'});
   }
+  mkOrders('axis','Setup — '+scName(G.scenario),items);
+  setPrompt('Set up the physical board as described, then press Ready to begin Turn '+G.turn+'.');
+  document.getElementById('mainBtn').textContent='READY — BEGIN TURN '+G.turn;
+  document.getElementById('mainBtn').onclick=()=>{document.getElementById('mainBtn').onclick=mainAction;G.phase=0;updPhase();hide('mainBtn');show('wxBtn');setPrompt('Turn '+G.turn+' ('+TURNS[G.turn].label+'). Roll the weather die.');};
 }
 
-function mainAction() {
-  if (gs.phase === 0 && gs.axisPlayerTurn) {
-    // Need to roll weather
-    showWeatherRoll();
-    return;
-  }
-  advancePhase();
+// ─── REINFORCEMENT CHECK ──────────────────────────────────────
+function checkReinf(){
+  const t=G.turn;
+  const ax=[...(AXREINF[t]||[]),...(AXREINF[t+'.5']||[]),...(AXREINF[String(t+0.5)]||[])];
+  const sv=[...(SOVREINF[t]||[]),...(SOVREINF[t+'.5']||[]),...(SOVREINF[String(t+0.5)]||[])];
+  if(ax.length||sv.length){
+    document.getElementById('reinfSec').classList.remove('hidden');
+    let h='';
+    if(ax.length)h+=`<div class="reinf-alert"><strong style="color:var(--axis-green)">✠ AXIS:</strong><br>${ax.join('<br>')}</div>`;
+    if(sv.length)h+=`<div class="reinf-alert sov"><strong style="color:var(--soviet-red)">★ SOVIET:</strong><br>${sv.join('<br>')}</div>`;
+    document.getElementById('reinfContent').innerHTML=h;
+  }else document.getElementById('reinfSec').classList.add('hidden');
+  if(t>=5&&!G.archActive){G.archActive=true;addLog('★ Archangel replacements active — roll 1d6 each Soviet replacement phase');}
+  if(t>=13)G.sturmActive=true;
+  updHdr();
 }
 
-function showWeatherRoll() {
-  document.getElementById('weatherBtn').style.display = 'block';
-  document.getElementById('mainActionBtn').style.display = 'none';
-  setPlayerPrompt('Roll weather for this turn, then press "Roll Weather" to determine conditions.');
-}
-
-function advancePhase() {
-  gs.phase++;
-
-  if (gs.phase > 5) {
-    // End of player turn
-    if (gs.axisPlayerTurn) {
-      // Switch to Soviet player turn
-      gs.axisPlayerTurn = false;
-      gs.phase = 1; // Soviet has no weather phase
-      addLog(`--- SOVIET PLAYER TURN (Turn ${gs.turn}: ${TURNS[gs.turn].label}) ---`);
-    } else {
-      // End of full turn
-      endTurn();
-      return;
-    }
-  }
-
-  updatePhaseBar();
-  showPhaseContent();
-}
-
-function showPhaseContent() {
-  const isComputerTurn = (gs.axisPlayerTurn && gs.computerSide === 'axis') ||
-                         (!gs.axisPlayerTurn && gs.computerSide === 'soviet');
-  const side = gs.axisPlayerTurn ? 'axis' : 'soviet';
-
-  switch(gs.phase) {
-    case 0:
-      showWeatherRoll();
-      break;
-    case 1:
-      if (isComputerTurn) {
-        showComputerMovement(side);
-      } else {
-        showPlayerMovement(side);
-      }
-      break;
-    case 2:
-      if (isComputerTurn) {
-        showComputerCombat(side);
-      } else {
-        showPlayerCombat(side);
-      }
-      break;
-    case 3:
-      if (isComputerTurn) {
-        showComputer2ndMovement(side);
-      } else {
-        showPlayer2ndMovement(side);
-      }
-      break;
-    case 4:
-      if (isComputerTurn) {
-        showComputer2ndCombat(side);
-      } else {
-        showPlayer2ndCombat(side);
-      }
-      break;
-    case 5:
-      showEndPhase(side);
-      break;
-  }
-}
-
-// ============================================================
-// SETUP INSTRUCTIONS
-// ============================================================
-
-function showSetupInstructions() {
-  const t = TURNS[gs.turn];
-  const orders = document.getElementById('computerOrders');
-  const isAxisFirst = gs.axisPlayerTurn;
-
-  let html = `<div class="orders-panel axis">
-    <div class="orders-header">
-      <span class="side-badge axis">Setup</span>
-      <span class="orders-title">${getScenarioName(gs.scenario)} — ${t.label}</span>
+// ─── COMBAT RESOLVER ─────────────────────────────────────────
+function openCombat(){document.getElementById('combatForm').classList.remove('hidden');hide('actionBtns');document.getElementById('combatSec').classList.remove('hidden');}
+function cancelCombat(){document.getElementById('combatForm').classList.add('hidden');show('actionBtns');}
+function doRoll(){
+  const ah=V('atkHex')||'?',dh=V('defHex')||'?';
+  const ac=parseInt(V('atkCF'))||0,rdc=parseInt(V('defCF'))||0;
+  const tm=parseInt(V('terrain')),as=parseInt(V('air'));
+  if(ac<1||rdc<1){alert('Enter combat factors for both sides.');return;}
+  const dc=rdc*tm,ratio=ac/dc,col=getCol(ratio,as),die=d6(),res=CRT[col][die-1];
+  const airTxt=as>0?(as===3?' + Stuka (+3)':' + Sturmovik (+1)'):'';
+  const tTxt=tm>1?' [def ×2]':'';
+  document.getElementById('combatContent').innerHTML=`<div class="combat-block">
+    <div class="combat-sides">
+      <div><div class="combat-cf-lbl">Attacker ${ah}</div><div class="combat-cf">${ac} CF</div></div>
+      <div style="font-size:22px;color:var(--text-secondary);padding-top:12px">vs</div>
+      <div style="text-align:right"><div class="combat-cf-lbl">Defender ${dh}${tTxt}</div><div class="combat-cf">${rdc}${tm>1?' ×2 = '+dc:''} CF</div></div>
     </div>
-    <ul class="order-list">`;
+    <div class="combat-result-area">
+      <div class="combat-odds-txt">Odds: <strong>${col}</strong>${airTxt}</div>
+      <div class="combat-die-txt">Die Roll: <strong>${die}</strong></div>
+      <div class="combat-result-big cr-${res}">${res}</div>
+      <div class="combat-explain">${explain(res)}</div>
+    </div></div>`;
+  addLog(`Combat ${ah}→${dh}: ${ac} vs ${dc} CF (${col}${airTxt}) · Roll ${die} = <strong>${res}</strong>`);
+  ['atkHex','defHex','atkCF','defCF'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('terrain').value='1';document.getElementById('air').value='0';
+  document.getElementById('combatForm').classList.add('hidden');show('actionBtns');
+}
+function getCol(ratio,shift){
+  const cs=[{c:"1-6",m:0.1667},{c:"1-5",m:0.2},{c:"1-4",m:0.25},{c:"1-3",m:0.334},{c:"1-2",m:0.5},{c:"1-1",m:1.5},{c:"2-1",m:2.5},{c:"3-1",m:3.5},{c:"4-1",m:4.5},{c:"5-1",m:6},{c:"6-1",m:8},{c:"7-1",m:9},{c:"9-1",m:Infinity}];
+  let idx=cs.length-1;for(let i=0;i<cs.length;i++){if(ratio<cs[i].m){idx=i;break;}}
+  return cs[Math.min(cs.length-1,idx+(shift===3?3:shift===1?1:0))].c;
+}
+function explain(r){return{AE:'ATTACKER ELIMINATED — All attacking units eliminated.',A1:'ATTACKER LOSS — One attacking unit (attacker\'s choice) eliminated. All attackers retreat 1–2 hexes.',AR:'ATTACKER RETREAT — All attacking units retreat 1–2 hexes. No losses.',C:'CONTACT — No losses or retreats for either side.',EX:'EXCHANGE — Attacker loses one unit, defender loses one unit. Remaining defenders retreat 1–2 hexes.',DR:'DEFENDER RETREAT — All defending units retreat 2 hexes. No losses.',D1:'DEFENDER LOSS — One defending unit (defender\'s choice) eliminated. Remaining defenders retreat 2 hexes.',DE:'DEFENDER ELIMINATED — All defending units eliminated.',DS:'DEFENDER SURRENDERS — All defending units surrender (Surrendered Units Box — cannot be replaced).'}[r]||'Unknown result.';}
 
-  if (gs.scenario === 'campaign' || gs.scenario === 'breaking_storm' || gs.scenario === 'barbarossa') {
-    html += `<li class="order-item info"><span class="order-num">1</span><span class="order-text"><strong>Russian Setup (first):</strong> Place all Soviet at-start units. Units with "C" start in specified cities; others anywhere in their Military District (L=Leningrad, B=Baltic, W=Western, K=Kiev, O=Odessa).</span></li>`;
-    html += `<li class="order-item info"><span class="order-num">2</span><span class="order-text"><strong>Axis Setup (second):</strong> Place Axis units anywhere in Germany, Poland, Hungary, Romania — not adjacent to Russian units. "R" units in Romania, "F" units in Finland.</span></li>`;
-    html += `<li class="order-item info"><span class="order-num">3</span><span class="order-text"><strong>Sudden Death Markers:</strong> Place 1942 markers at Kiev, Kalinin, Leningrad, Rostov, Kharkov, and Stalino.</span></li>`;
-    html += `<li class="order-item info"><span class="order-num">4</span><span class="order-text"><strong>Rail Conversion:</strong> Axis controls all rail on west side of start line. Place RR markers at start line.</span></li>`;
-    html += `<li class="order-item info"><span class="order-num">5</span><span class="order-text"><strong>Turn 1 Restriction:</strong> Army Group N attacks Baltic MD only; Army Group C attacks Western MD only; Army Group S attacks Kiev MD only.</span></li>`;
-  } else {
-    html += `<li class="order-item info"><span class="order-num">1</span><span class="order-text">Set up using the ${getScenarioName(gs.scenario)} scenario card. Place units as specified for each side.</span></li>`;
-    html += `<li class="order-item info"><span class="order-num">2</span><span class="order-text">Place Turn marker on Turn ${gs.turn} (${t.label}). Set Weather DRM to ${gs.scenario === 'fall_blau' ? '-1' : gs.scenario === 'zitadelle' ? '0' : gs.scenario === 'bagration' ? '+1' : '0'}.</span></li>`;
-  }
-
-  html += `</ul></div>`;
-  orders.innerHTML = html;
-
-  document.getElementById('computerOrdersTitle').textContent = 'Setup Instructions';
-  setPlayerPrompt('Set up the physical board as instructed, then press "Ready" to begin Turn 1.');
-  document.getElementById('weatherBtn').style.display = 'none';
-  document.getElementById('mainActionBtn').style.display = 'block';
-  document.getElementById('mainActionBtn').textContent = 'READY — BEGIN TURN 1';
-  document.getElementById('combatBtn').style.display = 'none';
+// ─── END TURN ────────────────────────────────────────────────
+function endTurn(){
+  addLog('=== END OF TURN '+G.turn+' ('+TURNS[G.turn].label+') ===',true);
+  if(G.turn>=SC_END[G.scenario]){showVictory();return;}
+  if(TURNS[G.turn].s==='jan_feb'){showSD(TURNS[G.turn].y);return;}
+  nextTurn();
+}
+function nextTurn(){
+  G.turn++;G.phase=0;G.axisFirst=true;
+  updHdr();updPhase();checkReinf();
+  addLog('=== TURN '+G.turn+': '+TURNS[G.turn].label+' ===',true);
+  hide('mainBtn');show('wxBtn');hide('combatBtn');
+  document.getElementById('combatForm').classList.add('hidden');show('actionBtns');
+  setPrompt('Turn '+G.turn+' ('+TURNS[G.turn].label+') begins. Roll the weather die.');
+  mkOrders('axis','Turn '+G.turn+' — '+TURNS[G.turn].label,[{t:'info',x:'Roll weather to begin.'}]);
+  saveGame();
+}
+const SD_OBJ={1942:'Kiev, Kalinin, Leningrad, Rostov, Kharkov, Stalino',1943:'Maikop Oil Fields, Moscow, Stalingrad, Kursk, Leningrad, Rostov',1944:'Leningrad, Smolensk, Kiev, Dnepropetrovsk, Sevastopol, Kharkov',1945:'Axis: all German cities + 1 oil well. Soviet: 1 German city + all oil wells + Fin/Rom/Hun surrendered'};
+function showSD(yr){
+  document.getElementById('orders').innerHTML=`<div class="vic-banner"><div class="vic-title">⚑ SUDDEN DEATH CHECK — Jan/Feb ${yr}</div><p style="font-size:14px;line-height:1.8;margin:10px 0">Check whether either side holds <strong>ALL</strong> of:<br><strong>${SD_OBJ[yr]||'See victory conditions'}</strong></p><p style="font-size:13px;color:var(--text-secondary)">Control = occupied OR in uncontested ZOC and last to hold it. If neither side achieves all objectives, the game continues.</p></div>`;
+  setPrompt('Check Sudden Death victory. Press "Continue" if no sudden death occurred.');
+  document.getElementById('mainBtn').textContent='NO SUDDEN DEATH — CONTINUE TO TURN '+(G.turn+1);
+  document.getElementById('mainBtn').onclick=()=>{document.getElementById('mainBtn').onclick=mainAction;nextTurn();};
+  hide('combatBtn');
+}
+function showVictory(){
+  document.getElementById('orders').innerHTML=`<div class="vic-banner"><div class="vic-title">⚑ SCENARIO COMPLETE</div><p style="font-size:14px;line-height:1.9;margin:12px 0"><strong>Axis wins if:</strong> Controls Moscow + Stalin eliminated, OR Russia doesn't control Berlin at end, OR Russia can't match board-edge exits.<br><br><strong>Soviet wins if:</strong> Controls Berlin at any point, OR Axis can't match board-edge exits.<br><br>Check VP conditions for scenario-specific victory if applicable.</p></div>`;
+  setPrompt('The scenario is complete. Determine the winner.');
+  document.getElementById('mainBtn').textContent='NEW GAME';
+  document.getElementById('mainBtn').onclick=()=>location.reload();
 }
 
-// ============================================================
-// REINFORCEMENTS
-// ============================================================
-
-function checkReinforcements() {
-  const t = gs.turn;
-  const axisReinf = AXIS_REINFORCEMENTS[t] || AXIS_REINFORCEMENTS[t + 0.5] || [];
-  const sovietReinf = SOVIET_REINFORCEMENTS[t] || SOVIET_REINFORCEMENTS[t + 0.5] || [];
-
-  if (axisReinf.length > 0 || sovietReinf.length > 0) {
-    document.getElementById('reinforceSection').classList.remove('hidden');
-    let html = '';
-    if (axisReinf.length > 0) {
-      html += `<div class="reinforce-alert">
-        <strong style="color:var(--axis-light)">AXIS:</strong><br>`;
-      axisReinf.forEach(r => { html += `${r}<br>`; });
-      html += `</div><br>`;
-    }
-    if (sovietReinf.length > 0) {
-      html += `<div class="reinforce-alert soviet">
-        <strong style="color:var(--soviet-light)">SOVIET:</strong><br>`;
-      sovietReinf.forEach(r => { html += `${r}<br>`; });
-      html += `</div>`;
-    }
-    document.getElementById('reinforceContent').innerHTML = html;
-  } else {
-    document.getElementById('reinforceSection').classList.add('hidden');
-  }
-
-  // Archangel
-  if (t >= 5 && !gs.archangelActive) {
-    gs.archangelActive = true;
-    addLog('Archangel replacements now active — roll 1d6 each Soviet replacement phase (+1 DRM in 1943-44)');
-  }
-
-  // Worker RPs doubled
-  if (t >= 13) {
-    const baseWorker = 8; // approximate — adjust based on actual workers in play
-    gs.workerRPs = baseWorker * 2;
-  }
-
-  // Sturmovik
-  if (t >= 14) gs.sturmovikActive = true;
-}
-
-// ============================================================
-// COMPUTER AI — MOVEMENT ORDERS
-// ============================================================
-
-function showOrders() {
-  gs.phase = 1;
-  updatePhaseBar();
-  showPhaseContent();
-}
-
-function showComputerMovement(side) {
-  const t = TURNS[gs.turn];
-  const orders = generateComputerMoves(side, t);
-  renderOrders(side, `${side.toUpperCase()} 1st Impulse Movement`, orders);
-  setPlayerPrompt(`Execute the computer's movement orders on the physical board. When done, press "Ready" to proceed to combat.`);
-  document.getElementById('mainActionBtn').style.display = 'block';
-  document.getElementById('mainActionBtn').textContent = 'MOVES EXECUTED — PROCEED TO COMBAT';
-  document.getElementById('combatBtn').style.display = 'none';
-  addLog(`[Turn ${gs.turn}] Computer (${side}) 1st impulse movement orders issued`);
-}
-
-function showComputer2ndMovement(side) {
-  const t = TURNS[gs.turn];
-  const orders = generateComputer2ndMoves(side, t);
-  renderOrders(side, `${side.toUpperCase()} 2nd Impulse Movement`, orders);
-  setPlayerPrompt(`Execute the computer's 2nd impulse movement orders. Remember: No Stuka/Sturmovik in 2nd impulse. Only HQ replacements.`);
-  document.getElementById('mainActionBtn').style.display = 'block';
-  document.getElementById('mainActionBtn').textContent = 'MOVES EXECUTED — PROCEED TO COMBAT';
-  document.getElementById('combatBtn').style.display = 'none';
-}
-
-function showComputerCombat(side) {
-  const t = TURNS[gs.turn];
-  const combats = generateComputerCombats(side, t);
-  renderCombatOrders(side, `${side.toUpperCase()} 1st Impulse Combat`, combats);
-  setPlayerPrompt(`The computer has declared these combats. Resolve each on the physical board and record results here.`);
-  document.getElementById('mainActionBtn').style.display = 'block';
-  document.getElementById('mainActionBtn').textContent = 'ALL COMBATS RESOLVED — CONTINUE';
-  document.getElementById('combatBtn').style.display = 'none';
-}
-
-function showComputer2ndCombat(side) {
-  renderOrders(side, `${side.toUpperCase()} 2nd Impulse Combat`, [
-    {type:'info', text:'Computer resolves any mandatory 2nd impulse combats. Units that were adjacent to enemy at start of 2nd impulse must attack if legally required.'}
-  ]);
-  setPlayerPrompt('Resolve any required 2nd impulse combats, then press Continue.');
-  document.getElementById('mainActionBtn').style.display = 'block';
-  document.getElementById('mainActionBtn').textContent = 'CONTINUE';
-}
-
-function showPlayerMovement(side) {
-  renderOrders(side, `YOUR ${side.toUpperCase()} 1st Impulse Movement`, [
-    {type:'info', text:`Make your movement on the physical board. Weather: ${gs.weather}. ${getMovementReminder()}`},
-    {type:'info', text:`Rail capacity: ${side==='axis' ? gs.axisRailCap : gs.sovietRailCap} units (free moves for new reinforcements/replacements).`},
-    {type:'info', text:'Resolve Automatic Victories (10-1 attacks) during movement if needed.'},
-  ]);
-  setPlayerPrompt('Complete your movement on the physical board. Press "Ready" when done, or "Declare Combat" to resolve any combats you wish to make.');
-  document.getElementById('mainActionBtn').style.display = 'block';
-  document.getElementById('mainActionBtn').textContent = 'MOVEMENT COMPLETE — GO TO COMBAT';
-  document.getElementById('combatBtn').style.display = 'block';
-  document.getElementById('combatBtn').textContent = 'RESOLVE COMBAT';
-}
-
-function showPlayer2ndMovement(side) {
-  renderOrders(side, `YOUR ${side.toUpperCase()} 2nd Impulse Movement`, [
-    {type:'info', text:`2nd impulse movement. Only mobile units move (German armor/mech = 4 hexes in clear/ltmud, 1 in snow). Soviet infantry cannot move 2nd impulse.`},
-    {type:'info', text:'No rail movement or Sturmoviks this impulse. Only HQ replacements allowed.'},
-    {type:'info', text:'Units in EZOC at start of 2nd impulse may NOT move this impulse.'},
-  ]);
-  setPlayerPrompt('Complete your 2nd impulse movement. Press "Ready" when done.');
-  document.getElementById('mainActionBtn').style.display = 'block';
-  document.getElementById('mainActionBtn').textContent = 'MOVEMENT COMPLETE — GO TO COMBAT';
-  document.getElementById('combatBtn').style.display = 'block';
-}
-
-function showPlayerCombat(side) {
-  renderOrders(side, `YOUR ${side.toUpperCase()} Combat`, [
-    {type:'info', text:'Declare and resolve all your combats. Units in EZOC MUST attack.'},
-    {type:'info', text:`Air support available: ${gs.stukas} Stuka(s) (+3 odds), ${gs.sturmoviks} Sturmovik(s) (+1 odds). One air unit per battle.`},
-    {type:'info', text:'Use the Combat Resolver below to calculate odds and roll results.'},
-  ]);
-  setPlayerPrompt('Use "Resolve Combat" to calculate and roll each battle. Press "All Combats Done" when finished.');
-  document.getElementById('mainActionBtn').style.display = 'block';
-  document.getElementById('mainActionBtn').textContent = 'ALL COMBATS DONE — CONTINUE';
-  document.getElementById('combatBtn').style.display = 'block';
-  document.getElementById('combatBtn').textContent = 'RESOLVE A COMBAT';
-}
-
-function showPlayer2ndCombat(side) {
-  renderOrders(side, `YOUR ${side.toUpperCase()} 2nd Impulse Combat`, [
-    {type:'info', text:'Resolve any 2nd impulse combats. Same rules as 1st impulse except no air support.'},
-  ]);
-  setPlayerPrompt('Resolve 2nd impulse combats if any. Press "Done" to continue.');
-  document.getElementById('mainActionBtn').style.display = 'block';
-  document.getElementById('mainActionBtn').textContent = 'COMBATS DONE — CONTINUE';
-  document.getElementById('combatBtn').style.display = 'block';
-}
-
-function showEndPhase(side) {
-  const endOrders = generateEndPhase(side);
-  renderOrders(side, `${side.toUpperCase()} End Phase`, endOrders);
-  setPlayerPrompt('Complete all end phase tasks, then press "End Phase" to advance.');
-  document.getElementById('mainActionBtn').style.display = 'block';
-  document.getElementById('mainActionBtn').textContent = 'END PHASE COMPLETE — CONTINUE';
-  document.getElementById('combatBtn').style.display = 'none';
-}
-
-// ============================================================
-// AI ORDER GENERATORS
-// ============================================================
-
-function generateComputerMoves(side, t) {
-  const orders = [];
-  const year = t.year;
-  const weather = gs.weather;
-
-  if (side === 'axis') {
-    orders.push({type:'info', text:`AXIS AI — Turn ${gs.turn} (${t.label}) — Weather: ${weather}`});
-    orders.push({type:'info', text:`Reinforcements/replacements enter first. Then move units.`});
-
-    if (year === 1941 && gs.turn <= 3) {
-      orders.push({type:'move', text:'PRIORITY: Drive Army Group North toward Leningrad along Baltic coast rail line. Push Finnish units south from Helsinki toward Leningrad.', hex:'Northern Front'});
-      orders.push({type:'move', text:'PRIORITY: Army Group Center advances toward Smolensk and Bryansk. Armored units push ahead, infantry follows to maintain ZOC coverage.', hex:'Central Front'});
-      orders.push({type:'move', text:'PRIORITY: Army Group South drives toward Kiev and Dnepropetrovsk. Romanian units cover the southern flank toward Odessa.', hex:'Southern Front'});
-      orders.push({type:'move', text:'Use rail movement to bring up reinforcements to forward positions. Maintain continuous front line — no gaps.', hex:'Rail'});
-    } else if (year === 1941 && gs.turn >= 4) {
-      orders.push({type:'move', text:`${weather === 'Snow' ? 'SNOW CONDITIONS: Movement halved. Consolidate positions, do not overextend.' : 'Continue pressure on all fronts. Drive toward Moscow if possible.'}`, hex:'All Fronts'});
-      orders.push({type:'move', text:'Ensure all forward units are in supply — trace 8-hex supply line to controlled city or rail.', hex:'Supply Check'});
-    } else if (year === 1942) {
-      orders.push({type:'move', text:'FALL BLAU: Southern thrust toward Stalingrad and Caucasus oil fields (Maikop, Grozny). Maintain northern front defensively.', hex:'South'});
-      orders.push({type:'move', text:'Keep Leningrad under pressure from north. Maintain siege if possible.', hex:'North'});
-    } else if (year >= 1943) {
-      orders.push({type:'move', text:'DEFENSIVE POSTURE: Establish strong defensive line. Panzer reserves positioned for counterattacks. Use terrain — rivers, cities — for defensive advantage.', hex:'All Fronts'});
-      orders.push({type:'move', text:'Conduct limited counterattacks at favorable odds to maintain initiative. Prioritize keeping supply lines open.', hex:'Counterattack'});
-    }
-
-    orders.push({type:'info', text:`Remember: Units must stop when entering EZOC. Woods/mountains/swamps require stop (except specified unit types). ${weather === 'Mud' ? 'MUD: Max 2 hexes movement.' : weather === 'Snow' ? 'SNOW: Half MF (round up).' : ''}`});
-
-  } else { // Soviet AI
-    orders.push({type:'info', text:`SOVIET AI — Turn ${gs.turn} (${t.label}) — Weather: ${weather}`});
-
-    if (year === 1941) {
-      orders.push({type:'move', text:'DEFENSIVE PRIORITY: Soviet forces conduct strategic withdrawal, trading space for time. Avoid encirclements.', hex:'All Fronts'});
-      orders.push({type:'move', text:'Moscow garrison: Keep Stavka and Stalin in Moscow. Ensure Moscow is well defended — units in and around the city.', hex:'Moscow'});
-      orders.push({type:'move', text:'Leningrad: Maintain garrison. Worker unit stays in city.', hex:'Leningrad'});
-      orders.push({type:'move', text:'Use rail movement (5 units) to shift forces to threatened sectors.', hex:'Rail'});
-      orders.push({type:'move', text:'Partisans: Place in Axis-controlled city or rail hex (not in EZOC, not within 5 hexes of SS unit).', hex:'Partisan'});
-    } else if (year === 1942) {
-      orders.push({type:'move', text:'STALINGRAD DEFENSE: Mass forces at Stalingrad and along Don River. The city must hold.', hex:'South'});
-      orders.push({type:'move', text:'Build up reserve forces east of Moscow for eventual counteroffensive.', hex:'Central'});
-      if (gs.turn >= 10) {
-        orders.push({type:'move', text:'COUNTERATTACK PREPARATIONS: Mass armor for encirclement operations. Winter conditions favor Soviet offensive.', hex:'Strategic'});
-      }
-    } else if (year >= 1943) {
-      orders.push({type:'move', text:'OFFENSIVE: Soviet forces attack on broad front. Prioritize encirclements and deep penetrations.', hex:'All Fronts'});
-      orders.push({type:'move', text:'Deploy Sturmoviks to support key attacks. Range: within 8 hexes of Stavka.', hex:'Air'});
-      orders.push({type:'move', text:'Advance toward Berlin. Push through Poland and Romania. Force minor ally surrenders.', hex:'Strategic'});
-      if (gs.turn >= 14 && gs.sturmovikActive) {
-        orders.push({type:'info', text:`Sturmoviks available: ${gs.sturmoviks} (starting Jul/Aug 1943). Each adds +1 odds level.`});
-      }
-    }
-
-    orders.push({type:'info', text:`Soviet infantry CANNOT move on 2nd impulse. Armor/mechanized get 2nd impulse movement in clear weather. ${weather === 'Snow' ? 'SNOW: Soviet forces move at half MF.' : ''}`});
-  }
-
-  return orders;
-}
-
-function generateComputer2ndMoves(side, t) {
-  const orders = [];
-  orders.push({type:'info', text:`${side.toUpperCase()} 2nd Impulse Movement`});
-
-  if (side === 'axis') {
-    orders.push({type:'move', text:'German armor and motorized units conduct 2nd impulse moves (4 hexes clear/ltmud, 1 hex snow). Exploit breakthroughs.', hex:'Mobile Units'});
-    orders.push({type:'move', text:'Army Group HQs may move this impulse (full MF, weather-immune). Position for next turn.', hex:'HQs'});
-    orders.push({type:'info', text:'No rail movement or Stuka support this impulse. HQ replacements only.'});
-  } else {
-    orders.push({type:'info', text:'Soviet infantry units CANNOT move 2nd impulse.'});
-    orders.push({type:'move', text:'Soviet armor/mechanized units conduct 2nd impulse movement if applicable.', hex:'Armor'});
-    orders.push({type:'move', text:'Stavka may move this impulse (full MF, weather-immune).', hex:'Stavka'});
-  }
-
-  return orders;
-}
-
-function generateComputerCombats(side, t) {
-  const combats = [];
-  const year = t.year;
-
-  if (side === 'axis') {
-    combats.push({type:'combat', text:'Computer attacks where 3-1 or better odds can be achieved. Stukas support the most critical attacks.', hex:'Priority'});
-    combats.push({type:'info', text:`Stuka support: ${gs.stukas} available (+3 odds levels each). One per battle. Must be within 8 hexes of Army Group HQ.`});
-    if (year === 1941) {
-      combats.push({type:'combat', text:'Seek Automatic Victories (10-1) to eliminate isolated Soviet units. Exploit gaps in Russian lines.', hex:'AV Attacks'});
-    }
-    combats.push({type:'info', text:'Attacker chooses retreat direction on DR results. Push defenders away from supply sources when possible.'});
-  } else {
-    combats.push({type:'combat', text:'Computer attacks only at 2-1 odds or better in 1941-42. More aggressive from 1943 onward.', hex:'Priority'});
-    if (year >= 1943 && t.n >= 10) {
-      combats.push({type:'combat', text:'SOVIET AV ATTACKS now available (from Nov/Dec 1942). Mass forces for 10-1 attacks to eliminate isolated Axis units.', hex:'AV Attacks'});
-    }
-    if (gs.sturmovikActive) {
-      combats.push({type:'info', text:`Sturmovik support: ${gs.sturmoviks} available (+1 odds level each). Multiple can support same battle. Range: 8 hexes from Stavka.`});
-    }
-  }
-
-  return combats;
-}
-
-function generateEndPhase(side) {
-  const orders = [];
-  const isAxisEndPhase = side === 'axis';
-
-  orders.push({type:'info', text:`${side.toUpperCase()} End Phase tasks (in order):`});
-  orders.push({type:'info', text:'1. Advance Railhead markers to reflect rail conversion.'});
-  orders.push({type:'info', text:'2. Check supply for all friendly units (8-hex supply line to city or friendly rail, 4 hexes in snow).'});
-  orders.push({type:'info', text:'3. ELIMINATE all out-of-supply units (no exceptions except paratroops, partisans, sea invasion units this turn).'});
-
-  if (!isAxisEndPhase) {
-    orders.push({type:'info', text:'4. Check Axis minor ally surrenders (Hungary: 5+ Soviet units in Hungary; Romania: Bucharest captured; Italy: auto Sep/Oct 1943; Finland: Helsinki captured or Sep/Oct 1944+ without Leningrad).'});
-    orders.push({type:'info', text:'5. Relocate all Russian partisans (replace in Axis city or rail hex).'});
-    orders.push({type:'info', text:'6. Advance Turn marker to next space.'});
-
-    if (gs.turn % 5 === 0 && gs.turn >= 5) { // Jan/Feb turns
-      orders.push({type:'combat', text:'SUDDEN DEATH VICTORY CHECK: Check if either side has achieved all objectives for this year!', hex:'Victory Check'});
-    }
-  } else {
-    orders.push({type:'info', text:'4. Flip Turn marker to Soviet side.'});
-  }
-
-  return orders;
-}
-
-// ============================================================
-// RENDER HELPERS
-// ============================================================
-
-function renderOrders(side, title, orders) {
-  const el = document.getElementById('computerOrders');
-  const isAxis = side === 'axis';
-  let html = `<div class="orders-panel ${isAxis ? 'axis' : ''}">
-    <div class="orders-header">
-      <span class="side-badge ${isAxis ? 'axis' : 'soviet'}">${isAxis ? 'AXIS' : 'SOVIET'}</span>
-      <span class="orders-title">${title}</span>
-    </div>
-    <ul class="order-list">`;
-
-  orders.forEach((o, i) => {
-    const hexBadge = o.hex ? `<span class="order-hex">${o.hex}</span>` : '';
-    html += `<li class="order-item ${o.type}">
-      <span class="order-num">${i+1}</span>
-      <span class="order-text">${o.text} ${hexBadge}</span>
-    </li>`;
-  });
-
-  html += `</ul></div>`;
-  el.innerHTML = html;
-  document.getElementById('computerOrdersTitle').textContent = title;
-}
-
-function renderCombatOrders(side, title, combats) {
-  renderOrders(side, title, combats);
-}
-
-// ============================================================
-// COMBAT RESOLVER
-// ============================================================
-
-function declareCombat() {
-  document.getElementById('combatInputArea').classList.remove('hidden');
-  document.getElementById('actionButtons').style.display = 'none';
-  document.getElementById('combatSection').classList.remove('hidden');
-}
-
-function cancelCombat() {
-  document.getElementById('combatInputArea').classList.add('hidden');
-  document.getElementById('actionButtons').style.display = 'block';
-}
-
-function resolveCombat() {
-  const atkHex = document.getElementById('attackerHex').value.trim();
-  const defHex = document.getElementById('defenderHex').value.trim();
-  const atkCF = parseInt(document.getElementById('attackerCF').value) || 0;
-  const rawDefCF = parseInt(document.getElementById('defenderCF').value) || 0;
-  const terrainMod = parseInt(document.getElementById('terrainMod').value);
-  const airShift = parseInt(document.getElementById('airSupport').value);
-
-  if (atkCF <= 0 || rawDefCF <= 0) {
-    alert('Please enter combat factors for both sides.');
-    return;
-  }
-
-  const defCF = rawDefCF * terrainMod;
-  let oddsRatio = atkCF / defCF;
-  let oddsCol = getOddsColumn(oddsRatio, airShift);
-  let die = rollDie();
-  let result = CRT[oddsCol] ? CRT[oddsCol][die-1] : 'C';
-
-  // Display result
-  const combatContent = document.getElementById('combatContent');
-  const resultClass = `result-${result}`;
-  let airText = airShift > 0 ? ` + ${airShift === 3 ? 'Stuka(+3)' : 'Sturmovik(+1)'}` : '';
-
-  combatContent.innerHTML = `<div class="combat-block">
-    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px">
-      <div>
-        <div style="font-size:11px; color:#888; letter-spacing:1px">ATTACKER</div>
-        <div class="combat-odds">${atkCF} CF</div>
-        <div style="font-size:11px; color:#666">${atkHex || '—'}</div>
-      </div>
-      <div style="text-align:center; padding-top:10px; color:#666; font-size:20px">vs</div>
-      <div style="text-align:right">
-        <div style="font-size:11px; color:#888; letter-spacing:1px">DEFENDER</div>
-        <div class="combat-odds">${rawDefCF} CF${terrainMod > 1 ? ' ×2' : ''} = ${defCF}</div>
-        <div style="font-size:11px; color:#666">${defHex || '—'}</div>
-      </div>
-    </div>
-    <div style="border-top:1px solid var(--panel-border); padding-top:10px; text-align:center">
-      <div style="font-size:12px; color:#888; margin-bottom:4px">Odds${airText}: <strong style="color:var(--highlight)">${oddsCol}</strong></div>
-      <div class="combat-roll">Die Roll: <strong>${die}</strong></div>
-      <div class="combat-result ${resultClass}">${result}</div>
-      <div class="combat-detail">${getCombatExplanation(result)}</div>
-    </div>
-  </div>`;
-
-  addLog(`Combat ${atkHex || '?'} → ${defHex || '?'}: ${atkCF}v${defCF} (${oddsCol}${airText}) Roll:${die} = ${result}`);
-  gs.combatLog.push({turn:gs.turn, atk:atkHex, def:defHex, odds:oddsCol, die, result});
-
-  // Reset inputs
-  document.getElementById('attackerHex').value = '';
-  document.getElementById('defenderHex').value = '';
-  document.getElementById('attackerCF').value = '';
-  document.getElementById('defenderCF').value = '';
-  document.getElementById('terrainMod').value = '1';
-  document.getElementById('airSupport').value = '0';
-  document.getElementById('combatInputArea').classList.add('hidden');
-  document.getElementById('actionButtons').style.display = 'block';
-}
-
-function getOddsColumn(ratio, airShift) {
-  // Odds columns in order
-  const cols = [
-    {col:"1-6", min:0, max:0.1666},
-    {col:"1-5", min:0.1666, max:0.2},
-    {col:"1-4", min:0.2, max:0.25},
-    {col:"1-3", min:0.25, max:0.333},
-    {col:"1-2", min:0.333, max:0.5},
-    {col:"1-1", min:0.5, max:1.5},
-    {col:"2-1", min:1.5, max:2.5},
-    {col:"3-1", min:2.5, max:3.5},
-    {col:"4-1", min:3.5, max:4.5},
-    {col:"5-1", min:4.5, max:6},
-    {col:"6-1", min:6, max:8},
-    {col:"7-1", min:8, max:9},
-    {col:"9-1", min:9, max:Infinity},
-  ];
-
-  // Find base column
-  let idx = 0;
-  for (let i = 0; i < cols.length; i++) {
-    if (ratio >= cols[i].min && ratio < cols[i].max) {
-      idx = i;
-      break;
-    }
-    if (ratio >= cols[cols.length-1].min) { idx = cols.length-1; break; }
-  }
-
-  // Apply air shift
-  idx = Math.min(cols.length-1, idx + (airShift === 3 ? 3 : airShift === 1 ? 1 : 0));
-  return cols[idx].col;
-}
-
-function getCombatExplanation(result) {
-  return {
-    AE: 'ATTACKER ELIMINATED — All attacking units are eliminated.',
-    A1: 'ATTACKER LOSS — One attacking unit (your choice) eliminated. All attacking units retreat 1-2 hexes.',
-    AR: 'ATTACKER RETREAT — All attacking units retreat 1-2 hexes. No losses.',
-    C: 'CONTACT — No losses or retreats for either side.',
-    EX: 'EXCHANGE — Attacker loses one unit, then defender loses one unit. Remaining defenders retreat 1-2 hexes.',
-    DR: 'DEFENDER RETREAT — All defending units retreat 2 hexes. No losses.',
-    D1: 'DEFENDER LOSS — One defending unit (defender\'s choice) eliminated. Remaining defenders retreat 2 hexes.',
-    DE: 'DEFENDER ELIMINATED — All defending units eliminated.',
-    DS: 'DEFENDER SURRENDERS — All defending units surrender (permanent — goes to Surrendered Units Box).'
-  }[result] || 'Unknown result.';
-}
-
-// ============================================================
-// END TURN
-// ============================================================
-
-function endTurn() {
-  addLog(`=== END OF TURN ${gs.turn} (${TURNS[gs.turn].label}) ===`);
-
-  // Check scenario end
-  if (gs.turn >= SCENARIO_END[gs.scenario]) {
-    showVictoryCheck();
-    return;
-  }
-
-  // Check sudden death (Jan/Feb turns = turns 5,11,17,23)
-  const t = TURNS[gs.turn];
-  if (t.season === 'jan_feb') {
-    addLog(`SUDDEN DEATH VICTORY CHECK for ${t.year}!`);
-    showSuddenDeathCheck(t.year);
-    return;
-  }
-
-  gs.turn++;
-  gs.phase = 0;
-  gs.axisPlayerTurn = true;
-
-  updateHeader();
-  updatePhaseBar();
-  checkReinforcements();
-  addLog(`=== TURN ${gs.turn}: ${TURNS[gs.turn].label} ===`);
-
-  // Start next turn with weather
-  showWeatherRoll();
-  document.getElementById('mainActionBtn').style.display = 'none';
-  document.getElementById('weatherBtn').style.display = 'block';
-  setPlayerPrompt(`Turn ${gs.turn} begins (${TURNS[gs.turn].label}). Roll the weather die to determine conditions.`);
-}
-
-function showSuddenDeathCheck(year) {
-  const objectives = {
-    1942: 'Kiev, Kalinin, Leningrad, Rostov, Kharkov, and Stalino',
-    1943: 'Maikop Oil Fields, Moscow, Stalingrad, Kursk, Leningrad, and Rostov',
-    1944: 'Leningrad, Smolensk, Kiev, Dnepropetrovsk, Sevastopol, and Kharkov',
-    1945: 'Axis: all cities in Germany + 1 oil well. Soviet: 1 city in Germany + all oil wells + Finland/Romania/Hungary surrendered'
-  };
-
-  const el = document.getElementById('computerOrders');
-  el.innerHTML = `<div class="victory-banner">
-    <div class="victory-text">⚑ SUDDEN DEATH CHECK — ${year}</div>
-    <p style="font-size:13px; color:var(--parchment-dark); margin:10px 0">
-      Objectives to check: <strong>${objectives[year] || 'See Victory Conditions'}</strong>
-    </p>
-    <p style="font-size:12px; color:#888">
-      Either side wins Sudden Death by controlling ALL listed objectives.<br>
-      Check each hex — control = occupied OR in uncontested ZOC and last controlled by that side.
-    </p>
-  </div>`;
-
-  setPlayerPrompt('Check sudden death victory conditions. Press "Continue" if no sudden death victory occurred.');
-  document.getElementById('mainActionBtn').style.display = 'block';
-  document.getElementById('mainActionBtn').textContent = 'NO SUDDEN DEATH — CONTINUE';
-  document.getElementById('mainActionBtn').onclick = () => {
-    document.getElementById('mainActionBtn').onclick = mainAction;
-    gs.turn++;
-    gs.phase = 0;
-    gs.axisPlayerTurn = true;
-    updateHeader();
-    updatePhaseBar();
-    checkReinforcements();
-    addLog(`=== TURN ${gs.turn}: ${TURNS[gs.turn].label} ===`);
-    showWeatherRoll();
-    document.getElementById('mainActionBtn').style.display = 'none';
-    document.getElementById('weatherBtn').style.display = 'block';
-    setPlayerPrompt(`Turn ${gs.turn} begins. Roll the weather die.`);
-  };
-}
-
-function showVictoryCheck() {
-  const el = document.getElementById('computerOrders');
-  el.innerHTML = `<div class="victory-banner">
-    <div class="victory-text">⚑ GAME OVER — Victory Determination</div>
-    <p style="font-size:13px; color:var(--parchment-dark); margin:12px 0; line-height:1.8">
-      <strong>Axis Campaign Victory:</strong> Control Moscow + Stalin eliminated, OR Russia doesn't control Berlin at end.<br><br>
-      <strong>Soviet Campaign Victory:</strong> Control Berlin at any point, OR Axis fails to match board-edge exits.<br><br>
-      <strong>Sudden Death:</strong> Check yearly objectives as defined.
-    </p>
-    <p style="font-size:12px; color:#888">The scenario has ended. Determine winner by scenario victory conditions.</p>
-  </div>`;
-  setPlayerPrompt('The scenario is complete. Determine the winner using the victory conditions above.');
-  document.getElementById('mainActionBtn').textContent = 'NEW GAME';
-  document.getElementById('mainActionBtn').onclick = () => location.reload();
-}
-
-// ============================================================
-// UTILITIES
-// ============================================================
-
-function rollDie() {
-  return Math.floor(Math.random() * 6) + 1;
-}
-
-function setPlayerPrompt(text) {
-  document.getElementById('playerPrompt').textContent = text;
-}
-
-function addLog(entry) {
-  gs.log.push(entry);
-  const logEl = document.getElementById('gameLogHistory');
-  const div = document.createElement('div');
-  div.className = 'log-entry';
-  div.innerHTML = entry;
-  logEl.appendChild(div);
-  logEl.scrollTop = logEl.scrollHeight;
-}
-
-function getMovementReminder() {
-  switch(gs.weather) {
-    case 'Clear': return 'Full movement. German armor 2nd impulse: 4 hexes.';
-    case 'LtMud': return 'Light Mud: Full 1st impulse movement. German armor 2nd impulse: 2 hexes.';
-    case 'Mud': return 'MUD: Maximum 2 hexes this impulse. No 2nd impulse movement except HQs.';
-    case 'Snow': return 'SNOW: Half MF (round up). Rail cap 3. Soviet 2nd impulse = 0. Combat supply check for Axis!';
-    default: return '';
-  }
-}
-
-// Initial render
+// ─── UTILS ───────────────────────────────────────────────────
+function d6(){return Math.floor(Math.random()*6)+1;}
+function setPrompt(t){document.getElementById('prompt').textContent=t;}
+function addLog(t,turn=false){G.log.push(t);const e=document.getElementById('logEl'),d=document.createElement('div');d.className='log-e'+(turn?' log-turn':'');d.innerHTML=t;e.appendChild(d);e.scrollTop=e.scrollHeight;}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+function show(id){document.getElementById(id).style.display='';}
+function hide(id){document.getElementById(id).style.display='none';}
+function V(id){return document.getElementById(id).value;}
+
+// ─── INIT ────────────────────────────────────────────────────
 buildCRT();
+checkSave();
 </script>
 
 </body>
