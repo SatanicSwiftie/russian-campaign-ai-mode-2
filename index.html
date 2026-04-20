@@ -170,19 +170,19 @@ select.inp option{background:#fff;color:var(–tmn)}
 .slbl{font-family:‘Oswald’,sans-serif;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(–tsc);margin-top:3px}
 
 /* ── SETUP SCREEN ── */
-.setup-screen{position:fixed;inset:0;background:#2a2010;display:flex;align-items:center;justify-content:center;z-index:1000;padding:16px;overflow-y:auto}
-.setup-card{background:var(–parch);border:3px solid #8b6914;border-radius:8px;padding:28px;max-width:540px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.5)}
-.setup-title{font-family:‘Special Elite’,cursive;font-size:30px;color:#2a2010;text-align:center;letter-spacing:2px;margin-bottom:4px}
-.setup-sub{font-family:‘Oswald’,sans-serif;font-size:12px;letter-spacing:3px;color:var(–tsc);text-align:center;text-transform:uppercase;margin-bottom:22px}
+.setup-screen{position:fixed;inset:0;background:var(–bbg);display:flex;align-items:center;justify-content:center;z-index:1000;padding:16px;overflow-y:auto}
+.setup-card{background:#ffffff;border:3px solid #8b6914;border-radius:8px;padding:32px;max-width:560px;width:100%;box-shadow:0 4px 24px rgba(0,0,0,.15)}
+.setup-title{font-family:‘Special Elite’,cursive;font-size:32px;color:var(–stl);text-align:center;letter-spacing:2px;margin-bottom:4px}
+.setup-sub{font-family:‘Oswald’,sans-serif;font-size:12px;letter-spacing:3px;color:var(–tsc);text-align:center;text-transform:uppercase;margin-bottom:24px}
 .sdiv{border:none;border-top:2px solid var(–bdr);margin:18px 0}
-.side-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:14px}
-.sc{border:3px solid var(–bdr);border-radius:6px;padding:16px 11px;text-align:center;cursor:pointer;transition:all .2s;background:#fff}
-.sc:hover{border-color:var(–hl)}
+.side-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.sc{border:3px solid var(–bdr);border-radius:6px;padding:18px 12px;text-align:center;cursor:pointer;transition:all .2s;background:#fafaf5}
+.sc:hover{border-color:var(–hl);background:var(–hlb)}
 .sc-a{border-color:var(–ag)!important;background:var(–ab)!important}
 .sc-s{border-color:var(–sr)!important;background:var(–sb)!important}
-.sicon{font-size:32px;margin-bottom:7px}
-.sname{font-family:‘Oswald’,sans-serif;font-size:16px;font-weight:700;letter-spacing:2px}
-.sdesc{font-size:11px;color:var(–tsc);margin-top:4px;line-height:1.5}
+.sicon{font-size:34px;margin-bottom:8px}
+.sname{font-family:‘Oswald’,sans-serif;font-size:17px;font-weight:700;letter-spacing:2px}
+.sdesc{font-size:12px;color:var(–tsc);margin-top:4px;line-height:1.5}
 
 /* ── UNIT ENTRY SETUP ── */
 .uentry-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -275,12 +275,12 @@ select.inp option{background:#fff;color:var(–tmn)}
      UNIT SETUP SCREEN
 ══════════════════════════════════════════════════════════ -->
 
-<div id="unitSetupScreen" class="hidden" style="background:var(--bbg);min-height:100vh;padding:16px">
+<div id="unitSetupScreen" class="hidden" style="background:var(--bbg);min-height:100vh;padding:16px;color:var(--tmn)"
   <div style="max-width:900px;margin:0 auto">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
       <div>
-        <div style="font-family:'Special Elite',cursive;font-size:24px;color:var(--stl)">Unit Setup</div>
-        <div style="font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:2px;color:var(--tsc);text-transform:uppercase" id="usScenLabel">Campaign Game — Turn 1</div>
+        <div style="font-family:'Special Elite',cursive;font-size:26px;color:var(--stl)">Unit Setup — Enter Starting Positions</div>
+        <div style="font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:2px;color:var(--tsc);text-transform:uppercase;margin-top:4px" id="usScenLabel">Campaign Game — Turn 1</div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn btn-ghost btn-sm" onclick="usTab('axis')">✠ Axis Units</button>
