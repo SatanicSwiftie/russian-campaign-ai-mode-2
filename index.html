@@ -186,11 +186,17 @@ select.inp option{background:#fff;color:var(–tmn)}
 
 /* ── UNIT ENTRY SETUP ── */
 .uentry-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.uentry-item{background:#fff;border:1px solid var(–bdr);border-radius:4px;padding:8px;display:flex;align-items:center;gap:8px}
-.ue-name{flex:1;font-size:12px;font-weight:600}
-.ue-cf{font-family:‘Oswald’,sans-serif;font-size:12px;font-weight:700;color:var(–tsc);min-width:28px}
-.ue-hex{width:72px;font-family:‘Oswald’,sans-serif;font-size:13px;padding:4px 7px;border:2px solid var(–bdr);border-radius:3px;text-transform:uppercase}
-.ue-hex:focus{outline:none;border-color:var(–hl)}
+.uentry-item{background:#fff;border:1px solid var(–bdr);border-radius:6px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.ue-top{display:flex;align-items:center;gap:8px}
+.ue-name{flex:1;font-size:13px;font-weight:700;color:var(–tmn)}
+.ue-cf{font-family:‘Oswald’,sans-serif;font-size:13px;font-weight:700;color:var(–hl);background:var(–hlb);padding:2px 8px;border-radius:3px;border:1px solid #d4a820;white-space:nowrap}
+.ue-obid{font-family:‘Oswald’,sans-serif;font-size:11px;font-weight:700;color:var(–tsc);background:#f0f0f0;padding:2px 6px;border-radius:3px;white-space:nowrap}
+.ue-group{font-family:‘Oswald’,sans-serif;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(–tsc)}
+.ue-desc{font-size:12px;color:var(–tsc);line-height:1.4;background:#fafaf5;border-left:3px solid var(–bdr);padding:4px 8px;border-radius:0 3px 3px 0}
+.ue-bottom{display:flex;align-items:center;gap:8px}
+.ue-hex-lbl{font-family:‘Oswald’,sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(–tsc);white-space:nowrap}
+.ue-hex{width:90px;font-family:‘Oswald’,sans-serif;font-size:14px;font-weight:700;padding:6px 10px;border:2px solid var(–bdr);border-radius:4px;text-transform:uppercase}
+.ue-hex:focus{outline:none;border-color:var(–hl);box-shadow:0 0 0 3px rgba(139,105,20,.15)}
 .ue-hex.ok{border-color:var(–ag);background:#f5faf0}
 .ue-hex.err{border-color:var(–sr);background:#fff5f5}
 
@@ -628,131 +634,170 @@ const SC_START={campaign:1,breaking_storm:1,barbarossa:1,fall_blau:7,zitadelle:1
 const SC_END={campaign:25,breaking_storm:5,barbarossa:10,fall_blau:14,zitadelle:18,bagration:25};
 
 // ─── UNIT DATABASE ────────────────────────────────────────────
-// id, side, name, type, cf, mf, nationality, size, arrivalTurn (1=at start)
+// obId = counter number/ID printed on physical counter
+// obGroup = OB card section heading
+// obDesc = physical identification hint
 const UNIT_DB = [
-  // ── GERMAN INFANTRY ──
-  {id:"GE_1INF",side:"axis",name:"1st Inf Corps",type:"infantry",cf:4,mf:4,nat:"german",sz:"corps",arr:1},
-  {id:"GE_2INF",side:"axis",name:"2nd Inf Corps",type:"infantry",cf:4,mf:4,nat:"german",sz:"corps",arr:1},
-  {id:"GE_3INF",side:"axis",name:"3rd Inf Corps",type:"infantry",cf:4,mf:4,nat:"german",sz:"corps",arr:1},
-  {id:"GE_4INF",side:"axis",name:"4th Inf Corps",type:"infantry",cf:4,mf:4,nat:"german",sz:"corps",arr:1},
-  {id:"GE_5INF",side:"axis",name:"5th Inf Corps",type:"infantry",cf:4,mf:4,nat:"german",sz:"corps",arr:1},
-  {id:"GE_6INF",side:"axis",name:"6th Inf Corps",type:"infantry",cf:4,mf:4,nat:"german",sz:"corps",arr:1},
-  {id:"GE_7INF",side:"axis",name:"7th Inf Corps",type:"infantry",cf:4,mf:4,nat:"german",sz:"corps",arr:1},
-  {id:"GE_8INF",side:"axis",name:"8th Inf Corps",type:"infantry",cf:4,mf:4,nat:"german",sz:"corps",arr:1},
-  {id:"GE_9INF",side:"axis",name:"9th Inf Corps",type:"infantry",cf:4,mf:4,nat:"german",sz:"corps",arr:1},
-  {id:"GE_10INF",side:"axis",name:"10th Inf Corps",type:"infantry",cf:4,mf:4,nat:"german",sz:"corps",arr:1},
-  {id:"GE_11INF",side:"axis",name:"11th Inf Corps",type:"infantry",cf:5,mf:4,nat:"german",sz:"corps",arr:1},
-  {id:"GE_12INF",side:"axis",name:"12th Inf Corps",type:"infantry",cf:3,mf:4,nat:"german",sz:"corps",arr:1},
-  {id:"GE_13INF",side:"axis",name:"13th Inf Corps",type:"infantry",cf:4,mf:4,nat:"german",sz:"corps",arr:1},
-  {id:"GE_17INF",side:"axis",name:"17th Inf Corps",type:"infantry",cf:3,mf:4,nat:"german",sz:"corps",arr:1},
-  {id:"GE_23INF",side:"axis",name:"23rd Inf Corps",type:"infantry",cf:3,mf:4,nat:"german",sz:"corps",arr:1},
-  {id:"GE_24INF",side:"axis",name:"24th Inf Corps",type:"infantry",cf:4,mf:4,nat:"german",sz:"corps",arr:1},
-  {id:"GE_26INF",side:"axis",name:"26th Inf Corps",type:"infantry",cf:4,mf:4,nat:"german",sz:"corps",arr:1},
-  {id:"GE_27INF",side:"axis",name:"27th Inf Corps",type:"infantry",cf:4,mf:4,nat:"german",sz:"corps",arr:1},
-  {id:"GE_28INF",side:"axis",name:"28th Inf Corps",type:"infantry",cf:4,mf:4,nat:"german",sz:"corps",arr:1},
-  {id:"GE_29INF",side:"axis",name:"29th Inf Corps",type:"infantry",cf:3,mf:4,nat:"german",sz:"corps",arr:1},
-  {id:"GE_30INF",side:"axis",name:"30th Inf Corps",type:"infantry",cf:3,mf:4,nat:"german",sz:"corps",arr:1},
-  {id:"GE_38INF",side:"axis",name:"38th Inf Corps",type:"infantry",cf:3,mf:4,nat:"german",sz:"corps",arr:1},
-  // ── GERMAN PANZER ──
-  {id:"GE_1PZ",side:"axis",name:"1st Pz Corps",type:"armor",cf:8,mf:7,nat:"german",sz:"corps",arr:1},
-  {id:"GE_2PZ",side:"axis",name:"2nd Pz Corps",type:"armor",cf:8,mf:7,nat:"german",sz:"corps",arr:1},
-  {id:"GE_3PZ",side:"axis",name:"3rd Pz Corps",type:"armor",cf:7,mf:7,nat:"german",sz:"corps",arr:1},
-  {id:"GE_4PZ",side:"axis",name:"4th Pz Corps",type:"armor",cf:6,mf:7,nat:"german",sz:"corps",arr:1},
-  {id:"GE_39PZ",side:"axis",name:"39th Pz Corps",type:"armor",cf:7,mf:7,nat:"german",sz:"corps",arr:1},
-  {id:"GE_40PZ",side:"axis",name:"40th Pz Corps",type:"armor",cf:7,mf:7,nat:"german",sz:"corps",arr:1},
-  {id:"GE_41PZ",side:"axis",name:"41st Pz Corps",type:"armor",cf:8,mf:7,nat:"german",sz:"corps",arr:1},
-  {id:"GE_46PZ",side:"axis",name:"46th Pz Corps",type:"armor",cf:7,mf:7,nat:"german",sz:"corps",arr:1},
-  {id:"GE_47PZ",side:"axis",name:"47th Pz Corps",type:"armor",cf:6,mf:7,nat:"german",sz:"corps",arr:1},
-  {id:"GE_48PZ",side:"axis",name:"48th Pz Corps",type:"armor",cf:7,mf:7,nat:"german",sz:"corps",arr:1},
-  {id:"GE_56PZ",side:"axis",name:"56th Pz Corps",type:"armor",cf:8,mf:7,nat:"german",sz:"corps",arr:1},
-  {id:"GE_57PZ",side:"axis",name:"57th Pz Corps",type:"armor",cf:7,mf:7,nat:"german",sz:"corps",arr:1},
-  {id:"GE_GD",side:"axis",name:"Grossdeutschland",type:"armor",cf:10,mf:8,nat:"german",sz:"corps",arr:7},
-  // ── GERMAN MOTORIZED ──
-  {id:"GE_50MOT",side:"axis",name:"50th Mot Corps",type:"motorized",cf:4,mf:6,nat:"german",sz:"corps",arr:7},
-  {id:"GE_DAK",side:"axis",name:"DAK Pz Corps",type:"armor",cf:8,mf:7,nat:"german",sz:"corps",arr:7},
-  // ── SS UNITS ──
-  {id:"GE_SSRES",side:"axis",name:"SS Reserve",type:"motorized",cf:2,mf:6,nat:"ss",sz:"corps",arr:1},
-  {id:"GE_1SS",side:"axis",name:"1st SS Pz Corps",type:"armor",cf:10,mf:8,nat:"ss",sz:"corps",arr:11},
-  {id:"GE_2SS",side:"axis",name:"2nd SS Pz Corps",type:"armor",cf:9,mf:8,nat:"ss",sz:"corps",arr:11},
-  {id:"GE_3SS",side:"axis",name:"3rd SS Pz Corps",type:"armor",cf:7,mf:7,nat:"ss",sz:"corps",arr:11},
-  {id:"GE_4SS",side:"axis",name:"4th SS Pz Corps",type:"armor",cf:6,mf:7,nat:"ss",sz:"corps",arr:22},
-  // ── LUFTWAFFE ──
-  {id:"GE_3LW",side:"axis",name:"3rd LW Inf",type:"infantry",cf:2,mf:4,nat:"luftwaffe",sz:"corps",arr:1},
-  {id:"GE_4LW",side:"axis",name:"4th LW Mot",type:"motorized",cf:2,mf:6,nat:"luftwaffe",sz:"corps",arr:1},
-  // ── GERMAN HQs ──
-  {id:"GE_HQN",side:"axis",name:"HQ Army Grp North",type:"hq",cf:1,mf:7,nat:"german",sz:"armygrp",arr:1},
-  {id:"GE_HQC",side:"axis",name:"HQ Army Grp Center",type:"hq",cf:1,mf:7,nat:"german",sz:"armygrp",arr:1},
-  {id:"GE_HQS",side:"axis",name:"HQ Army Grp South",type:"hq",cf:1,mf:7,nat:"german",sz:"armygrp",arr:1},
-  {id:"GE_HITLER",side:"axis",name:"Hitler",type:"leader",cf:1,mf:0,nat:"german",sz:"leader",arr:1},
-  // ── ROMANIAN ──
-  {id:"RO_1INF",side:"axis",name:"Rum 1st Inf",type:"infantry",cf:4,mf:4,nat:"romanian",sz:"corps",arr:1},
-  {id:"RO_2INF",side:"axis",name:"Rum 2nd Inf",type:"infantry",cf:3,mf:5,nat:"romanian",sz:"corps",arr:1},
-  {id:"RO_3INF",side:"axis",name:"Rum 3rd Inf",type:"infantry",cf:3,mf:4,nat:"romanian",sz:"corps",arr:1},
-  {id:"RO_4INF",side:"axis",name:"Rum 4th Inf",type:"infantry",cf:4,mf:4,nat:"romanian",sz:"corps",arr:1},
-  {id:"RO_5INF",side:"axis",name:"Rum 5th Inf",type:"infantry",cf:4,mf:4,nat:"romanian",sz:"corps",arr:1},
-  {id:"RO_CAV",side:"axis",name:"Rum Cavalry",type:"cavalry",cf:2,mf:7,nat:"romanian",sz:"corps",arr:1},
-  {id:"RO_MTN",side:"axis",name:"Rum Mountain",type:"mountain",cf:2,mf:4,nat:"romanian",sz:"corps",arr:1},
-  // ── FINNISH ──
-  {id:"FI_1INF",side:"axis",name:"Fin 1st Corps",type:"infantry",cf:4,mf:3,nat:"finnish",sz:"corps",arr:1},
-  {id:"FI_2INF",side:"axis",name:"Fin 2nd Corps",type:"infantry",cf:4,mf:3,nat:"finnish",sz:"corps",arr:1},
-  {id:"FI_3INF",side:"axis",name:"Fin 3rd Corps",type:"infantry",cf:4,mf:3,nat:"finnish",sz:"corps",arr:1},
-  {id:"FI_4INF",side:"axis",name:"Fin 4th Corps",type:"infantry",cf:2,mf:3,nat:"finnish",sz:"corps",arr:1},
-  // ── HUNGARIAN ──
-  {id:"HU_7INF",side:"axis",name:"Hun 7th Corps",type:"infantry",cf:3,mf:3,nat:"hungarian",sz:"corps",arr:11},
-  {id:"HU_8INF",side:"axis",name:"Hun 8th Corps",type:"infantry",cf:2,mf:3,nat:"hungarian",sz:"corps",arr:11},
+  // ══ AXIS UNITS ══
 
-  // ══ SOVIET UNITS ══
-  // ── INFANTRY ARMIES (at start — selected major ones) ──
-  {id:"SO_3INF",side:"soviet",name:"3rd Army",type:"infantry",cf:5,mf:3,nat:"russian",sz:"army",arr:1},
-  {id:"SO_4INF",side:"soviet",name:"4th Army",type:"infantry",cf:4,mf:3,nat:"russian",sz:"army",arr:1},
-  {id:"SO_5INF",side:"soviet",name:"5th Army",type:"infantry",cf:6,mf:3,nat:"russian",sz:"army",arr:1},
-  {id:"SO_6INF",side:"soviet",name:"6th Army",type:"infantry",cf:4,mf:3,nat:"russian",sz:"army",arr:1},
-  {id:"SO_8INF",side:"soviet",name:"8th Army",type:"infantry",cf:4,mf:3,nat:"russian",sz:"army",arr:1},
-  {id:"SO_9INF",side:"soviet",name:"9th Army",type:"infantry",cf:5,mf:3,nat:"russian",sz:"army",arr:1},
-  {id:"SO_10INF",side:"soviet",name:"10th Army",type:"infantry",cf:5,mf:3,nat:"russian",sz:"army",arr:1},
-  {id:"SO_11INF",side:"soviet",name:"11th Army",type:"infantry",cf:4,mf:3,nat:"russian",sz:"army",arr:1},
-  {id:"SO_12INF",side:"soviet",name:"12th Army",type:"infantry",cf:4,mf:3,nat:"russian",sz:"army",arr:1},
-  {id:"SO_13INF",side:"soviet",name:"13th Army",type:"infantry",cf:5,mf:3,nat:"russian",sz:"army",arr:1},
-  {id:"SO_18INF",side:"soviet",name:"18th Army",type:"infantry",cf:5,mf:3,nat:"russian",sz:"army",arr:1},
-  {id:"SO_21INF",side:"soviet",name:"21st Army",type:"infantry",cf:4,mf:3,nat:"russian",sz:"army",arr:1},
-  {id:"SO_22INF",side:"soviet",name:"22nd Army",type:"infantry",cf:4,mf:3,nat:"russian",sz:"army",arr:1},
-  {id:"SO_26INF",side:"soviet",name:"26th Army",type:"infantry",cf:2,mf:3,nat:"russian",sz:"army",arr:1},
-  {id:"SO_27INF",side:"soviet",name:"27th Army",type:"infantry",cf:4,mf:3,nat:"russian",sz:"army",arr:1},
-  {id:"SO_ODESSA",side:"soviet",name:"Odessa Army",type:"infantry",cf:3,mf:3,nat:"russian",sz:"army",arr:1},
-  // ── GUARDS INFANTRY ──
-  {id:"SO_1GDINF",side:"soviet",name:"1st Gd Inf Army",type:"infantry",cf:7,mf:4,nat:"guards",sz:"army",arr:4},
-  {id:"SO_2GDINF",side:"soviet",name:"2nd Gd Inf Army",type:"infantry",cf:7,mf:4,nat:"guards",sz:"army",arr:4},
-  {id:"SO_3GDINF",side:"soviet",name:"3rd Gd Inf Army",type:"infantry",cf:8,mf:4,nat:"guards",sz:"army",arr:11},
-  {id:"SO_4GDINF",side:"soviet",name:"4th Gd Inf Army",type:"infantry",cf:7,mf:4,nat:"guards",sz:"army",arr:11},
-  // ── TANK ARMIES ──
-  {id:"SO_1TK",side:"soviet",name:"1st Tank Army",type:"armor",cf:6,mf:6,nat:"russian",sz:"army",arr:2},
-  {id:"SO_2TK",side:"soviet",name:"2nd Tank Army",type:"armor",cf:6,mf:6,nat:"russian",sz:"army",arr:2},
-  {id:"SO_3TK",side:"soviet",name:"3rd Tank Army",type:"armor",cf:5,mf:6,nat:"russian",sz:"army",arr:3},
-  {id:"SO_6TK",side:"soviet",name:"6th Tank Corps",type:"armor",cf:10,mf:7,nat:"russian",sz:"corps",arr:3},
-  {id:"SO_1GDTK",side:"soviet",name:"1st Gd Tank Army",type:"armor",cf:8,mf:7,nat:"guards",sz:"army",arr:9},
-  {id:"SO_2GDTK",side:"soviet",name:"2nd Gd Tank Army",type:"armor",cf:8,mf:7,nat:"guards",sz:"army",arr:9},
-  {id:"SO_5GDTK",side:"soviet",name:"5th Gd Tank Army",type:"armor",cf:10,mf:7,nat:"guards",sz:"army",arr:13},
-  {id:"SO_6GDTK",side:"soviet",name:"6th Gd Tank Army",type:"armor",cf:10,mf:7,nat:"guards",sz:"army",arr:14},
-  // ── CAVALRY ──
-  {id:"SO_1CAV",side:"soviet",name:"1st Cavalry Corps",type:"cavalry",cf:2,mf:7,nat:"russian",sz:"corps",arr:1},
-  {id:"SO_2CAV",side:"soviet",name:"2nd Cavalry Corps",type:"cavalry",cf:2,mf:7,nat:"russian",sz:"corps",arr:1},
+  // ── ARMY GROUP NORTH (N marker on counter) ──
+  {id:"GE_8PZ",  side:"axis",name:"8th Pz Corps",   type:"armor",    cf:8,mf:7,nat:"german",sz:"corps",  arr:1, obId:"N/8",  obGroup:"Army Group North",  obDesc:"Panzer symbol, N marker, CF 8-7"},
+  {id:"GE_56PZ", side:"axis",name:"56th Pz Corps",  type:"armor",    cf:8,mf:7,nat:"german",sz:"corps",  arr:1, obId:"N/56", obGroup:"Army Group North",  obDesc:"Panzer symbol, N marker, CF 8-7"},
+  {id:"GE_41PZ", side:"axis",name:"41st Pz Corps",  type:"armor",    cf:7,mf:7,nat:"german",sz:"corps",  arr:1, obId:"N/41", obGroup:"Army Group North",  obDesc:"Panzer symbol, N marker, CF 7-7"},
+  {id:"GE_N1INF",side:"axis",name:"1st Inf (N)",    type:"infantry", cf:4,mf:4,nat:"german",sz:"corps",  arr:1, obId:"N/1",  obGroup:"Army Group North",  obDesc:"Infantry symbol, N marker, CF 4-4"},
+  {id:"GE_N10INF",side:"axis",name:"10th Inf (N)",  type:"infantry", cf:3,mf:4,nat:"german",sz:"corps",  arr:1, obId:"N/10", obGroup:"Army Group North",  obDesc:"Infantry symbol, N marker, CF 3-4"},
+  {id:"GE_N28INF",side:"axis",name:"28th Inf (N)",  type:"infantry", cf:3,mf:4,nat:"german",sz:"corps",  arr:1, obId:"N/28", obGroup:"Army Group North",  obDesc:"Infantry symbol, N marker, CF 3-4"},
+  {id:"GE_N38INF",side:"axis",name:"38th Inf (N)",  type:"infantry", cf:3,mf:4,nat:"german",sz:"corps",  arr:1, obId:"N/38", obGroup:"Army Group North",  obDesc:"Infantry symbol, N marker, CF 3-4"},
+  {id:"GE_N2INF", side:"axis",name:"2nd Inf (N)",   type:"infantry", cf:3,mf:4,nat:"german",sz:"corps",  arr:1, obId:"N/2",  obGroup:"Army Group North",  obDesc:"Infantry symbol, N marker, CF 3-4"},
+  {id:"GE_HQN",  side:"axis",name:"HQ Army Grp North",type:"hq",     cf:1,mf:7,nat:"german",sz:"armygrp",arr:1, obId:"HQ/N", obGroup:"Army Group North",  obDesc:"HQ symbol, NORTH label, CF 1-7"},
+
+  // ── ARMY GROUP CENTER (C marker on counter) ──
+  {id:"GE_2PZ",  side:"axis",name:"2nd Pz Corps",   type:"armor",    cf:8,mf:7,nat:"german",sz:"corps",  arr:1, obId:"C/2",  obGroup:"Army Group Center", obDesc:"Panzer symbol, C marker, CF 8-7"},
+  {id:"GE_3PZ",  side:"axis",name:"3rd Pz Corps",   type:"armor",    cf:8,mf:7,nat:"german",sz:"corps",  arr:1, obId:"C/3",  obGroup:"Army Group Center", obDesc:"Panzer symbol, C marker, CF 8-7"},
+  {id:"GE_47PZ", side:"axis",name:"47th Pz Corps",  type:"armor",    cf:6,mf:7,nat:"german",sz:"corps",  arr:1, obId:"C/47", obGroup:"Army Group Center", obDesc:"Panzer symbol, C marker, CF 6-7"},
+  {id:"GE_24PZ", side:"axis",name:"24th Pz Corps",  type:"armor",    cf:7,mf:7,nat:"german",sz:"corps",  arr:1, obId:"C/24", obGroup:"Army Group Center", obDesc:"Panzer symbol, C marker, CF 7-7"},
+  {id:"GE_46PZ", side:"axis",name:"46th Pz Corps",  type:"armor",    cf:7,mf:7,nat:"german",sz:"corps",  arr:1, obId:"C/46", obGroup:"Army Group Center", obDesc:"Panzer symbol, C marker, CF 7-7"},
+  {id:"GE_C5INF",side:"axis",name:"5th Inf (C)",    type:"infantry", cf:5,mf:4,nat:"german",sz:"corps",  arr:1, obId:"C/5",  obGroup:"Army Group Center", obDesc:"Infantry symbol, C marker, CF 5-4"},
+  {id:"GE_C6INF",side:"axis",name:"6th Inf (C)",    type:"infantry", cf:4,mf:4,nat:"german",sz:"corps",  arr:1, obId:"C/6",  obGroup:"Army Group Center", obDesc:"Infantry symbol, C marker, CF 4-4"},
+  {id:"GE_C7INF",side:"axis",name:"7th Inf (C)",    type:"infantry", cf:4,mf:4,nat:"german",sz:"corps",  arr:1, obId:"C/7",  obGroup:"Army Group Center", obDesc:"Infantry symbol, C marker, CF 4-4"},
+  {id:"GE_C8INF",side:"axis",name:"8th Inf (C)",    type:"infantry", cf:4,mf:4,nat:"german",sz:"corps",  arr:1, obId:"C/8",  obGroup:"Army Group Center", obDesc:"Infantry symbol, C marker, CF 4-4"},
+  {id:"GE_C9INF",side:"axis",name:"9th Inf (C)",    type:"infantry", cf:4,mf:4,nat:"german",sz:"corps",  arr:1, obId:"C/9",  obGroup:"Army Group Center", obDesc:"Infantry symbol, C marker, CF 4-4"},
+  {id:"GE_C12INF",side:"axis",name:"12th Inf (C)",  type:"infantry", cf:4,mf:4,nat:"german",sz:"corps",  arr:1, obId:"C/12", obGroup:"Army Group Center", obDesc:"Infantry symbol, C marker, CF 4-4"},
+  {id:"GE_C13INF",side:"axis",name:"13th Inf (C)",  type:"infantry", cf:5,mf:4,nat:"german",sz:"corps",  arr:1, obId:"C/13", obGroup:"Army Group Center", obDesc:"Infantry symbol, C marker, CF 5-4"},
+  {id:"GE_C43INF",side:"axis",name:"43rd Inf (C)",  type:"infantry", cf:4,mf:4,nat:"german",sz:"corps",  arr:1, obId:"C/43", obGroup:"Army Group Center", obDesc:"Infantry symbol, C marker, CF 4-4"},
+  {id:"GE_C53INF",side:"axis",name:"53rd Inf (C)",  type:"infantry", cf:4,mf:4,nat:"german",sz:"corps",  arr:1, obId:"C/53", obGroup:"Army Group Center", obDesc:"Infantry symbol, C marker, CF 4-4"},
+  {id:"GE_C11INF",side:"axis",name:"11th Inf (C)",  type:"infantry", cf:3,mf:4,nat:"german",sz:"corps",  arr:1, obId:"C/11", obGroup:"Army Group Center", obDesc:"Infantry symbol, C marker, CF 3-4"},
+  {id:"GE_HQC",  side:"axis",name:"HQ Army Grp Center",type:"hq",    cf:1,mf:7,nat:"german",sz:"armygrp",arr:1, obId:"HQ/C", obGroup:"Army Group Center", obDesc:"HQ symbol, CENTER label, CF 1-7"},
+
+  // ── ARMY GROUP SOUTH (S marker on counter) ──
+  {id:"GE_1PZ",  side:"axis",name:"1st Pz Corps",   type:"armor",    cf:7,mf:7,nat:"german",sz:"corps",  arr:1, obId:"S/1",  obGroup:"Army Group South",  obDesc:"Panzer symbol, S marker, CF 7-7"},
+  {id:"GE_48PZ", side:"axis",name:"48th Pz Corps",  type:"armor",    cf:7,mf:7,nat:"german",sz:"corps",  arr:1, obId:"S/48", obGroup:"Army Group South",  obDesc:"Panzer symbol, S marker, CF 7-7"},
+  {id:"GE_3PZS", side:"axis",name:"3rd Pz Corps (S)",type:"armor",   cf:6,mf:7,nat:"german",sz:"corps",  arr:1, obId:"S/3",  obGroup:"Army Group South",  obDesc:"Panzer symbol, S marker, CF 6-7"},
+  {id:"GE_S4INF",side:"axis",name:"4th Inf (S)",    type:"infantry", cf:3,mf:6,nat:"german",sz:"corps",  arr:1, obId:"S/4",  obGroup:"Army Group South",  obDesc:"Motorized symbol, S marker, CF 3-6"},
+  {id:"GE_S17INF",side:"axis",name:"17th Inf (S)",  type:"infantry", cf:5,mf:4,nat:"german",sz:"corps",  arr:1, obId:"S/17", obGroup:"Army Group South",  obDesc:"Infantry symbol, S marker, CF 5-4"},
+  {id:"GE_S44INF",side:"axis",name:"44th Inf (S)",  type:"infantry", cf:3,mf:4,nat:"german",sz:"corps",  arr:1, obId:"S/44", obGroup:"Army Group South",  obDesc:"Infantry symbol, S marker, CF 3-4"},
+  {id:"GE_S55INF",side:"axis",name:"55th Inf (S)",  type:"infantry", cf:3,mf:4,nat:"german",sz:"corps",  arr:1, obId:"S/55", obGroup:"Army Group South",  obDesc:"Infantry symbol, S marker, CF 3-4"},
+  {id:"GE_S11INF",side:"axis",name:"11th Inf (S)",  type:"infantry", cf:5,mf:5,nat:"german",sz:"corps",  arr:1, obId:"S/11", obGroup:"Army Group South",  obDesc:"Infantry symbol, S marker, CF 5-5"},
+  {id:"GE_HQS",  side:"axis",name:"HQ Army Grp South",type:"hq",     cf:1,mf:7,nat:"german",sz:"armygrp",arr:1, obId:"HQ/S", obGroup:"Army Group South",  obDesc:"HQ symbol, SOUTH label, CF 1-7"},
+
+  // ── BERLIN / SPECIAL ──
+  {id:"GE_HITLER",side:"axis",name:"Hitler",         type:"leader",   cf:1,mf:0,nat:"german",sz:"leader", arr:1, obId:"HITLER",obGroup:"Berlin",           obDesc:"Portrait counter, HITLER label, CF 1-0 — starts in Berlin"},
+
+  // ── SS UNITS ──
+  {id:"GE_SSRES",side:"axis",name:"SS Reserve",      type:"motorized",cf:2,mf:7,nat:"ss",    sz:"corps",  arr:1, obId:"SS/RES",obGroup:"SS Units",          obDesc:"Motorized symbol, SS marker, CF 2-7"},
+  {id:"GE_1SS",  side:"axis",name:"1st SS Pz",       type:"armor",    cf:10,mf:8,nat:"ss",   sz:"corps",  arr:11,obId:"1SS",   obGroup:"SS Reinforcements", obDesc:"Panzer symbol, 1SS, CF 10-8 — arrives Jan 1943"},
+  {id:"GE_2SS",  side:"axis",name:"2nd SS Pz",       type:"armor",    cf:9,mf:8,nat:"ss",    sz:"corps",  arr:11,obId:"2SS",   obGroup:"SS Reinforcements", obDesc:"Panzer symbol, 2SS, CF 9-8 — arrives Jan 1943"},
+  {id:"GE_3SS",  side:"axis",name:"3rd SS Pz",       type:"armor",    cf:7,mf:7,nat:"ss",    sz:"corps",  arr:11,obId:"3SS",   obGroup:"SS Reinforcements", obDesc:"Panzer symbol, 3SS, CF 7-7 — arrives Jan 1943"},
+
+  // ── LUFTWAFFE ──
+  {id:"GE_3LW",  side:"axis",name:"3rd LW Inf",      type:"infantry", cf:2,mf:4,nat:"luftwaffe",sz:"corps",arr:1,obId:"3LW",  obGroup:"Luftwaffe",         obDesc:"Infantry symbol, LW marker, CF 2-3 (parachute icon)"},
+  {id:"GE_4LW",  side:"axis",name:"4th LW Mot",      type:"motorized",cf:2,mf:6,nat:"luftwaffe",sz:"corps",arr:1,obId:"4LW",  obGroup:"Luftwaffe",         obDesc:"Motorized symbol, LW marker, CF 2-5-6"},
+
+  // ── FINNISH (F marker, blue counters) ──
+  {id:"FI_1INF", side:"axis",name:"Fin Corps (3-4)", type:"infantry", cf:3,mf:4,nat:"finnish",sz:"corps",  arr:1, obId:"F/71", obGroup:"Finland",           obDesc:"Blue counter, F marker, infantry symbol, CF 3-4 — leftmost Finnish counter"},
+  {id:"FI_2INF", side:"axis",name:"Fin Corps (4-3)a",type:"infantry", cf:4,mf:3,nat:"finnish",sz:"corps",  arr:1, obId:"F/72", obGroup:"Finland",           obDesc:"Blue counter, F marker, infantry symbol, CF 4-3 — 2nd from left"},
+  {id:"FI_3INF", side:"axis",name:"Fin Corps (4-3)b",type:"infantry", cf:4,mf:3,nat:"finnish",sz:"corps",  arr:1, obId:"F/73", obGroup:"Finland",           obDesc:"Blue counter, F marker, infantry symbol, CF 4-3 — 3rd from left"},
+  {id:"FI_4INF", side:"axis",name:"Fin Corps (2-3)", type:"infantry", cf:2,mf:3,nat:"finnish",sz:"corps",  arr:1, obId:"F/74", obGroup:"Finland",           obDesc:"Blue counter, F marker, infantry symbol, CF 2-3 — rightmost Finnish counter"},
+
+  // ── ROMANIAN (R marker, green counters) ──
+  {id:"RO_1INF", side:"axis",name:"Rum 1st Inf",     type:"infantry", cf:4,mf:6,nat:"romanian",sz:"corps", arr:1, obId:"R/1",  obGroup:"Rumania",           obDesc:"Green counter, R marker, CF 4-6"},
+  {id:"RO_2INF", side:"axis",name:"Rum 2nd Mech",    type:"motorized",cf:3,mf:5,nat:"romanian",sz:"corps", arr:1, obId:"R/2",  obGroup:"Rumania",           obDesc:"Green counter, R marker, motorized, CF 3-5"},
+  {id:"RO_3INF", side:"axis",name:"Rum 3rd Inf",     type:"infantry", cf:3,mf:4,nat:"romanian",sz:"corps", arr:1, obId:"R/3",  obGroup:"Rumania",           obDesc:"Green counter, R marker, CF 3-4"},
+  {id:"RO_4INF", side:"axis",name:"Rum 4th Inf",     type:"infantry", cf:2,mf:7,nat:"romanian",sz:"corps", arr:1, obId:"R/4",  obGroup:"Rumania",           obDesc:"Green counter, R marker, cavalry, CF 2-7"},
+  {id:"RO_5INF", side:"axis",name:"Rum 5th Inf",     type:"infantry", cf:4,mf:4,nat:"romanian",sz:"corps", arr:1, obId:"R/5",  obGroup:"Rumania",           obDesc:"Green counter, R marker, CF 4-4"},
+  {id:"RO_6INF", side:"axis",name:"Rum 6th Inf",     type:"infantry", cf:4,mf:4,nat:"romanian",sz:"corps", arr:1, obId:"R/6",  obGroup:"Rumania",           obDesc:"Green counter, R marker, CF 4-4"},
+  {id:"RO_7INF", side:"axis",name:"Rum 7th Inf",     type:"infantry", cf:3,mf:4,nat:"romanian",sz:"corps", arr:1, obId:"R/7",  obGroup:"Rumania",           obDesc:"Green counter, R marker, CF 3-4"},
+
+  // ══ SOVIET AT-START UNITS ══
+
+  // ── MOSCOW (C start — specific city) ──
+  {id:"SO_STAVKA",side:"soviet",name:"Stavka HQ",    type:"hq",       cf:1,mf:7,nat:"russian",sz:"armygrp",arr:1, obId:"STAVKA",obGroup:"Moscow (C)",        obDesc:"HQ symbol, STAVKA label, CF 1-7 — must start in Moscow"},
+  {id:"SO_STALIN",side:"soviet",name:"Stalin",        type:"leader",   cf:1,mf:0,nat:"russian",sz:"leader", arr:1, obId:"STALIN",obGroup:"Moscow (C)",        obDesc:"Portrait counter, STALIN label, CF 1-0 — must start in Moscow"},
+  {id:"SO_C5INF", side:"soviet",name:"5th Army (C)", type:"infantry", cf:5,mf:3,nat:"russian",sz:"army",   arr:1, obId:"C/5",  obGroup:"Moscow (C)",        obDesc:"Infantry symbol, C marker, CF 5-3 — starts in Moscow"},
+  {id:"SO_C2INF", side:"soviet",name:"2nd Army (C)", type:"infantry", cf:2,mf:5,nat:"russian",sz:"army",   arr:1, obId:"C/2",  obGroup:"Moscow (C)",        obDesc:"Infantry symbol, C marker, CF 2-5 — starts in Moscow"},
+  {id:"SO_WRK_MOS",side:"soviet",name:"Worker: Moscow",type:"worker", cf:3,mf:0,nat:"russian",sz:"none",   arr:1, obId:"W/MOS",obGroup:"Moscow (C)",        obDesc:"Worker symbol, Moscow label, CF 3 — must stay in Moscow"},
+
+  // ── TULA (C start) ──
+  {id:"SO_TUL4INF",side:"soviet",name:"4th Army (Tula)",type:"infantry",cf:4,mf:3,nat:"russian",sz:"army", arr:1, obId:"C/4T", obGroup:"Tula (C)",          obDesc:"Infantry symbol, C marker, CF 4-3 — starts in Tula"},
+
+  // ── KIEV (C start) ──
+  {id:"SO_K4INF", side:"soviet",name:"4th Army (Kiev)",type:"infantry",cf:4,mf:3,nat:"russian",sz:"army",  arr:1, obId:"C/4K", obGroup:"Kiev (C)",          obDesc:"Infantry symbol, C marker, CF 4-3 — starts in Kiev"},
+  {id:"SO_K27INF",side:"soviet",name:"27th Army (Kiev)",type:"infantry",cf:2,mf:7,nat:"russian",sz:"army", arr:1, obId:"C/27", obGroup:"Kiev (C)",          obDesc:"Cavalry symbol, C marker, CF 2-7 — starts in Kiev"},
+  {id:"SO_WRK_KIE",side:"soviet",name:"Worker: Kiev",type:"worker",    cf:2,mf:0,nat:"russian",sz:"none",  arr:1, obId:"W/KIE",obGroup:"Kiev (C)",          obDesc:"Worker symbol, Kiev label, CF 2 — must stay in Kiev"},
+
+  // ── RIGA (C start) ──
+  {id:"SO_RIG4INF",side:"soviet",name:"4th Army (Riga)",type:"infantry",cf:4,mf:3,nat:"russian",sz:"army", arr:1, obId:"C/4R", obGroup:"Riga (C)",          obDesc:"Infantry symbol, C marker, CF 4-3 — starts in Riga"},
+  {id:"SO_RIG3INF",side:"soviet",name:"3rd Army (Riga)",type:"infantry",cf:3,mf:5,nat:"russian",sz:"army", arr:1, obId:"C/3R", obGroup:"Riga (C)",          obDesc:"Infantry symbol, C marker, CF 3-5 — starts in Riga"},
+
+  // ── LENINGRAD (C start) ──
+  {id:"SO_LEN3INF",side:"soviet",name:"3rd Army (Len)",type:"infantry",cf:3,mf:5,nat:"russian",sz:"army",  arr:1, obId:"C/3L", obGroup:"Leningrad (C)",     obDesc:"Infantry symbol, C marker, CF 3-5 — starts in Leningrad"},
+  {id:"SO_WRK_LEN",side:"soviet",name:"Worker: Leningrad",type:"worker",cf:2,mf:0,nat:"russian",sz:"none", arr:1, obId:"W/LEN",obGroup:"Leningrad (C)",     obDesc:"Worker symbol, Leningrad label, CF 2 — must stay in Leningrad"},
+
+  // ── MINSK (C start) ──
+  {id:"SO_MIN4INF",side:"soviet",name:"4th Army (Minsk)",type:"infantry",cf:4,mf:3,nat:"russian",sz:"army",arr:1, obId:"C/4M", obGroup:"Minsk (C)",         obDesc:"Infantry symbol, C marker, CF 4-3 — starts in Minsk"},
+  {id:"SO_MIN2INF",side:"soviet",name:"2nd Army (Minsk)",type:"infantry",cf:2,mf:5,nat:"russian",sz:"army",arr:1, obId:"C/2M", obGroup:"Minsk (C)",         obDesc:"Infantry symbol, C marker, CF 2-5 — starts in Minsk"},
+
+  // ── KHARKOV (C start) ──
+  {id:"SO_WRK_KHA",side:"soviet",name:"Worker: Kharkov",type:"worker",cf:2,mf:0,nat:"russian",sz:"none",   arr:1, obId:"W/KHA",obGroup:"Kharkov (C)",       obDesc:"Worker symbol, Kharkov label, CF 2 — must stay in Kharkov"},
+  {id:"SO_KHA2INF",side:"soviet",name:"2nd Army (Kha)",type:"infantry",cf:2,mf:7,nat:"russian",sz:"army",  arr:1, obId:"C/2K", obGroup:"Kharkov (C)",       obDesc:"Cavalry/infantry, C marker, CF 2-7 — starts in Kharkov"},
+
+  // ── STALINO (C start) ──
+  {id:"SO_WRK_STA",side:"soviet",name:"Worker: Stalino",type:"worker",cf:2,mf:0,nat:"russian",sz:"none",   arr:1, obId:"W/STA",obGroup:"Stalino (C)",       obDesc:"Worker symbol, Stalino label, CF 2 — must stay in Stalino"},
+
+  // ── KRASNODAR (C start) ──
+  {id:"SO_KRA4INF",side:"soviet",name:"4th Army (Krasnodar)",type:"infantry",cf:4,mf:3,nat:"russian",sz:"army",arr:1,obId:"C/4KR",obGroup:"Krasnodar (C)",  obDesc:"Infantry symbol, C marker, CF 4-3 — starts in Krasnodar"},
+
+  // ── KALININ (C start) ──
+  {id:"SO_KAL5INF",side:"soviet",name:"5th Army (Kalinin)",type:"infantry",cf:5,mf:3,nat:"russian",sz:"army",arr:1,obId:"C/5KL",obGroup:"Kalinin (C)",      obDesc:"Infantry symbol, C marker, CF 5-3 — starts in Kalinin"},
+
+  // ── ODESSA MILITARY DISTRICT (O) ──
+  {id:"SO_O5INF", side:"soviet",name:"5th Army (O)",  type:"infantry", cf:5,mf:3,nat:"russian",sz:"army",  arr:1, obId:"O/5",  obGroup:"Odessa MD (O)",     obDesc:"Infantry symbol, O marker, CF 5-3 — set up in Odessa MD"},
+  {id:"SO_O3INF", side:"soviet",name:"3rd Army (O)",  type:"infantry", cf:3,mf:5,nat:"russian",sz:"army",  arr:1, obId:"O/3",  obGroup:"Odessa MD (O)",     obDesc:"Infantry symbol, O marker, CF 3-5 — set up in Odessa MD"},
+  {id:"SO_O3INFb",side:"soviet",name:"3rd Army (O)b", type:"infantry", cf:3,mf:7,nat:"russian",sz:"army",  arr:1, obId:"O/3b", obGroup:"Odessa MD (O)",     obDesc:"Cavalry symbol, O marker, CF 3-7 — set up in Odessa MD"},
+
+  // ── KIEV MILITARY DISTRICT (K) ──
+  {id:"SO_K5INFa",side:"soviet",name:"5th Army (K)a", type:"infantry", cf:5,mf:3,nat:"russian",sz:"army",  arr:1, obId:"K/5a", obGroup:"Kiev MD (K)",       obDesc:"Infantry symbol, K marker, CF 5-3 — set up in Kiev MD"},
+  {id:"SO_K5INFb",side:"soviet",name:"5th Army (K)b", type:"infantry", cf:5,mf:3,nat:"russian",sz:"army",  arr:1, obId:"K/5b", obGroup:"Kiev MD (K)",       obDesc:"Infantry symbol, K marker, CF 5-3 — set up in Kiev MD"},
+  {id:"SO_K6INF", side:"soviet",name:"6th Army (K)",  type:"infantry", cf:6,mf:3,nat:"russian",sz:"army",  arr:1, obId:"K/6",  obGroup:"Kiev MD (K)",       obDesc:"Infantry symbol, K marker, CF 6-3 — set up in Kiev MD"},
+  {id:"SO_K5INFc",side:"soviet",name:"5th Army (K)c", type:"infantry", cf:5,mf:3,nat:"russian",sz:"army",  arr:1, obId:"K/5c", obGroup:"Kiev MD (K)",       obDesc:"Infantry symbol, K marker, CF 5-3 — set up in Kiev MD"},
+  {id:"SO_K2INFa",side:"soviet",name:"2nd Army (K)a", type:"infantry", cf:2,mf:5,nat:"russian",sz:"army",  arr:1, obId:"K/2a", obGroup:"Kiev MD (K)",       obDesc:"Infantry symbol, K marker, CF 2-5 — set up in Kiev MD"},
+  {id:"SO_K2INFb",side:"soviet",name:"2nd Army (K)b", type:"infantry", cf:2,mf:5,nat:"russian",sz:"army",  arr:1, obId:"K/2b", obGroup:"Kiev MD (K)",       obDesc:"Infantry symbol, K marker, CF 2-5 — set up in Kiev MD"},
+  {id:"SO_K3INF", side:"soviet",name:"3rd Army (K)",  type:"infantry", cf:3,mf:5,nat:"russian",sz:"army",  arr:1, obId:"K/3",  obGroup:"Kiev MD (K)",       obDesc:"Infantry symbol, K marker, CF 3-5 — set up in Kiev MD"},
+  {id:"SO_K3INFb",side:"soviet",name:"3rd Cavalry (K)",type:"cavalry", cf:3,mf:7,nat:"russian",sz:"army",  arr:1, obId:"K/3b", obGroup:"Kiev MD (K)",       obDesc:"Cavalry symbol, K marker, CF 3-7 — set up in Kiev MD"},
+
+  // ── WESTERN MILITARY DISTRICT (W) ──
+  {id:"SO_W5INF", side:"soviet",name:"5th Army (W)",  type:"infantry", cf:5,mf:3,nat:"russian",sz:"army",  arr:1, obId:"W/5",  obGroup:"Western MD (W)",    obDesc:"Infantry symbol, W marker, CF 5-3 — set up in Western MD"},
+  {id:"SO_W3INFa",side:"soviet",name:"3rd Army (W)a", type:"infantry", cf:3,mf:3,nat:"russian",sz:"army",  arr:1, obId:"W/3a", obGroup:"Western MD (W)",    obDesc:"Infantry symbol, W marker, CF 3-3 — set up in Western MD"},
+  {id:"SO_W5INFb",side:"soviet",name:"5th Army (W)b", type:"infantry", cf:5,mf:3,nat:"russian",sz:"army",  arr:1, obId:"W/5b", obGroup:"Western MD (W)",    obDesc:"Infantry symbol, W marker, CF 5-3 — set up in Western MD"},
+  {id:"SO_W2INF", side:"soviet",name:"2nd Army (W)",  type:"infantry", cf:2,mf:5,nat:"russian",sz:"army",  arr:1, obId:"W/2",  obGroup:"Western MD (W)",    obDesc:"Infantry symbol, W marker, CF 2-5 — set up in Western MD"},
+  {id:"SO_W3INFb",side:"soviet",name:"3rd Army (W)b", type:"infantry", cf:3,mf:5,nat:"russian",sz:"army",  arr:1, obId:"W/3b", obGroup:"Western MD (W)",    obDesc:"Infantry symbol, W marker, CF 3-5 — set up in Western MD"},
+  {id:"SO_W2INFb",side:"soviet",name:"2nd Army (W)b", type:"infantry", cf:2,mf:7,nat:"russian",sz:"army",  arr:1, obId:"W/2b", obGroup:"Western MD (W)",    obDesc:"Cavalry symbol, W marker, CF 2-7 — set up in Western MD"},
+  {id:"SO_W3INFc",side:"soviet",name:"3rd Army (W)c", type:"infantry", cf:3,mf:7,nat:"russian",sz:"army",  arr:1, obId:"W/3c", obGroup:"Western MD (W)",    obDesc:"Cavalry symbol, W marker, CF 3-7 — set up in Western MD"},
+
+  // ── BALTIC MILITARY DISTRICT (B) ──
+  {id:"SO_B5INF", side:"soviet",name:"5th Army (B)",  type:"infantry", cf:5,mf:3,nat:"russian",sz:"army",  arr:1, obId:"B/5",  obGroup:"Baltic MD (B)",     obDesc:"Infantry symbol, B marker, CF 5-3 — set up in Baltic MD"},
+  {id:"SO_B6INF", side:"soviet",name:"6th Army (B)",  type:"infantry", cf:6,mf:3,nat:"russian",sz:"army",  arr:1, obId:"B/6",  obGroup:"Baltic MD (B)",     obDesc:"Infantry symbol, B marker, CF 6-3 — set up in Baltic MD"},
+  {id:"SO_B2INF", side:"soviet",name:"2nd Army (B)",  type:"infantry", cf:2,mf:5,nat:"russian",sz:"army",  arr:1, obId:"B/2",  obGroup:"Baltic MD (B)",     obDesc:"Infantry symbol, B marker, CF 2-5 — set up in Baltic MD"},
+  {id:"SO_B3INF", side:"soviet",name:"3rd Army (B)",  type:"infantry", cf:3,mf:5,nat:"russian",sz:"army",  arr:1, obId:"B/3",  obGroup:"Baltic MD (B)",     obDesc:"Infantry symbol, B marker, CF 3-5 — set up in Baltic MD"},
+
+  // ── LENINGRAD MILITARY DISTRICT (L) ──
+  {id:"SO_L4INF", side:"soviet",name:"4th Army (L)",  type:"infantry", cf:4,mf:3,nat:"russian",sz:"army",  arr:1, obId:"L/4",  obGroup:"Leningrad MD (L)",  obDesc:"Infantry symbol, L marker, CF 4-3 — set up in Leningrad MD"},
+  {id:"SO_L5INF", side:"soviet",name:"5th Army (L)",  type:"infantry", cf:5,mf:3,nat:"russian",sz:"army",  arr:1, obId:"L/5",  obGroup:"Leningrad MD (L)",  obDesc:"Infantry symbol, L marker, CF 5-3 — set up in Leningrad MD"},
+
   // ── PARATROOPERS ──
-  {id:"SO_1PARA",side:"soviet",name:"1st Para Corps",type:"paratroop",cf:1,mf:2,nat:"russian",sz:"corps",arr:3},
-  {id:"SO_2PARA",side:"soviet",name:"2nd Para Corps",type:"paratroop",cf:1,mf:2,nat:"russian",sz:"corps",arr:3},
-  {id:"SO_3PARA",side:"soviet",name:"3rd Para Corps",type:"paratroop",cf:1,mf:2,nat:"russian",sz:"corps",arr:3},
-  // ── HQS & LEADERS ──
-  {id:"SO_STAVKA",side:"soviet",name:"Stavka HQ",type:"hq",cf:1,mf:7,nat:"russian",sz:"armygrp",arr:1},
-  {id:"SO_STALIN",side:"soviet",name:"Stalin",type:"leader",cf:1,mf:0,nat:"russian",sz:"leader",arr:1},
-  // ── WORKERS ──
-  {id:"SO_WRK_MOS",side:"soviet",name:"Worker: Moscow",type:"worker",cf:3,mf:0,nat:"russian",sz:"none",arr:1},
-  {id:"SO_WRK_KIE",side:"soviet",name:"Worker: Kiev",type:"worker",cf:2,mf:0,nat:"russian",sz:"none",arr:1},
-  {id:"SO_WRK_LEN",side:"soviet",name:"Worker: Leningrad",type:"worker",cf:2,mf:0,nat:"russian",sz:"none",arr:1},
-  {id:"SO_WRK_KHA",side:"soviet",name:"Worker: Kharkov",type:"worker",cf:2,mf:0,nat:"russian",sz:"none",arr:1},
-  {id:"SO_WRK_STA",side:"soviet",name:"Worker: Stalino",type:"worker",cf:2,mf:0,nat:"russian",sz:"none",arr:1},
+  {id:"SO_1PARA",side:"soviet",name:"1st Para Corps", type:"paratroop",cf:1,mf:2,nat:"russian",sz:"corps", arr:3, obId:"PARA1",obGroup:"Paratroop Reserve", obDesc:"Parachute symbol, CF 1-2 — arrives Sep 1941, goes to Para Reserve"},
+  {id:"SO_2PARA",side:"soviet",name:"2nd Para Corps", type:"paratroop",cf:1,mf:2,nat:"russian",sz:"corps", arr:3, obId:"PARA2",obGroup:"Paratroop Reserve", obDesc:"Parachute symbol, CF 1-2 — arrives Sep 1941, goes to Para Reserve"},
+  {id:"SO_3PARA",side:"soviet",name:"3rd Para Corps", type:"paratroop",cf:1,mf:2,nat:"russian",sz:"corps", arr:3, obId:"PARA3",obGroup:"Paratroop Reserve", obDesc:"Parachute symbol, CF 1-2 — arrives Sep 1941, goes to Para Reserve"},
+
+  // ── GUARDS (arrive as reinforcements) ──
+  {id:"SO_1GDTK",side:"soviet",name:"1st Gd Tank Army",type:"armor",  cf:8,mf:7,nat:"guards", sz:"army",  arr:9, obId:"1GdTk",obGroup:"Soviet Reinforcements",obDesc:"Tank symbol, Guards red, CF 8-6 — arrives Sep 1942"},
+  {id:"SO_2GDTK",side:"soviet",name:"2nd Gd Tank Army",type:"armor",  cf:8,mf:7,nat:"guards", sz:"army",  arr:9, obId:"2GdTk",obGroup:"Soviet Reinforcements",obDesc:"Tank symbol, Guards red, CF 8-6 — arrives Sep 1942"},
+  {id:"SO_5GDTK",side:"soviet",name:"5th Gd Tank Army",type:"armor",  cf:10,mf:7,nat:"guards",sz:"army",  arr:13,obId:"5GdTk",obGroup:"Soviet Reinforcements",obDesc:"Tank symbol, Guards red, CF 10-7 — arrives May 1943"},
+
   // ── PARTISANS ──
-  {id:"SO_PRT1",side:"soviet",name:"Partisan 1",type:"partisan",cf:1,mf:0,nat:"russian",sz:"none",arr:3},
-  {id:"SO_PRT2",side:"soviet",name:"Partisan 2",type:"partisan",cf:1,mf:0,nat:"russian",sz:"none",arr:3},
-  {id:"SO_PRT3",side:"soviet",name:"Partisan 3",type:"partisan",cf:1,mf:0,nat:"russian",sz:"none",arr:3},
+  {id:"SO_PRT1",side:"soviet",name:"Partisan 1",      type:"partisan", cf:1,mf:0,nat:"russian",sz:"none",  arr:3, obId:"PRT1", obGroup:"Partisans",         obDesc:"Partisan symbol, CF 1 — available Sep 1941"},
+  {id:"SO_PRT2",side:"soviet",name:"Partisan 2",      type:"partisan", cf:1,mf:0,nat:"russian",sz:"none",  arr:3, obId:"PRT2", obGroup:"Partisans",         obDesc:"Partisan symbol, CF 1 — available Sep 1941"},
+  {id:"SO_PRT3",side:"soviet",name:"Partisan 3",      type:"partisan", cf:1,mf:0,nat:"russian",sz:"none",  arr:3, obId:"PRT3", obGroup:"Partisans",         obDesc:"Partisan symbol, CF 1 — available Sep 1941"},
 ];
 
 // ─── REINFORCEMENT SCHEDULE ───────────────────────────────────
@@ -904,17 +949,43 @@ function buildUGrid(gridId,side){
   const el=document.getElementById(gridId);
   const units=G.units.filter(u=>u.side===side&&u.arr<=G.turn);
   el.innerHTML='';
+
+  // Group by OB section
+  const groups={};
   units.forEach(u=>{
-    const div=document.createElement('div');
-    div.className='uentry-item';
-    div.innerHTML=`
-      <div class="ue-name">${u.name}</div>
-      <div class="ue-cf">${u.cf}-${u.mf}</div>
-      <input class="ue-hex" id="ue_${u.id}" placeholder="Hex" value="${u.hex||''}"
-        oninput="setUnitHex('${u.id}',this.value)"
-        onchange="validateHex('${u.id}',this.value)">
-    `;
-    el.appendChild(div);
+    const g=u.obGroup||'Other';
+    if(!groups[g])groups[g]=[];
+    groups[g].push(u);
+  });
+
+  Object.entries(groups).forEach(([groupName,groupUnits])=>{
+    // Group header
+    const hdr=document.createElement('div');
+    hdr.style.cssText='grid-column:1/-1;margin-top:10px;margin-bottom:4px';
+    hdr.innerHTML=`<div style="font-family:Oswald,sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--stl);border-bottom:2px solid var(--bdr);padding-bottom:4px">📋 ${groupName}</div>`;
+    el.appendChild(hdr);
+
+    groupUnits.forEach(u=>{
+      const div=document.createElement('div');
+      div.className='uentry-item';
+      const sideColor=u.side==='axis'?'var(--ag)':'var(--sr)';
+      div.innerHTML=`
+        <div class="ue-top">
+          <div class="ue-name">${u.name}</div>
+          <div class="ue-cf">${u.cf}-${u.mf}</div>
+          ${u.obId?`<div class="ue-obid">#${u.obId}</div>`:''}
+        </div>
+        ${u.obDesc?`<div class="ue-desc">🔍 ${u.obDesc}</div>`:''}
+        <div class="ue-bottom">
+          <div class="ue-hex-lbl">Starting Hex:</div>
+          <input class="ue-hex" id="ue_${u.id}" placeholder="e.g. E14" value="${u.hex||''}"
+            oninput="setUnitHex('${u.id}',this.value)"
+            onchange="validateHex('${u.id}',this.value)">
+          <div style="font-size:11px;color:var(--tsc);font-style:italic">or OMB / PARA / leave blank</div>
+        </div>
+      `;
+      el.appendChild(div);
+    });
   });
 }
 
